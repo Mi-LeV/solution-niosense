@@ -23,8 +23,8 @@
 
 - Calculer la presence d'interferences et la distance feu-camions
 - SI la communication est possible :
-  Envoyer un ping aux camions concernes
-  Attendre le ping des camions concernes
+  - Envoyer un ping aux camions concernes
+  - Attendre le ping des camions concernes
   
 - Calculer l'etat du feu
 - Allumer les LEDS
