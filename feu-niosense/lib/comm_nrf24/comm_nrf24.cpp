@@ -4,7 +4,7 @@
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    ESP_LOGE(TAG,"Radio hardware is not responding");
+    ESP_LOGE(TAG_NRF,"Radio hardware is not responding");
     while (1); // wait indefinitely
   }
 
@@ -53,23 +53,23 @@ void send_and_receive_comm_nrf(){
         uint8_t pipe;
         if (radio.available(&pipe)) {  // is there an ACK payload? grab the pipe number that received it
             radio.read(&slave_payload[node], sizeof(slave_payload));  // get incoming ACK payload
-            ESP_LOGI(TAG," Recieved ");
-            ESP_LOGI(TAG, radio.getDynamicPayloadSize());  // print incoming payload size
-            ESP_LOGI(TAG, " bytes on pipe ");
-            ESP_LOGI(TAG, pipe);  // print pipe number that received the ACK
-            ESP_LOGI(TAG, " : ");
+            ESP_LOGI(TAG_NRF," Recieved ");
+            ESP_LOGI(TAG_NRF, radio.getDynamicPayloadSize());  // print incoming payload size
+            ESP_LOGI(TAG_NRF, " bytes on pipe ");
+            ESP_LOGI(TAG_NRF, pipe);  // print pipe number that received the ACK
+            ESP_LOGI(TAG_NRF, " : ");
 
-            ESP_LOGI(TAG, slave_payload[node].connection_status);
-            ESP_LOGI(TAG, slave_payload[node].command_response);
-            ESP_LOGI(TAG, slave_payload[node].position);
+            ESP_LOGI(TAG_NRF, slave_payload[node].connection_status);
+            ESP_LOGI(TAG_NRF, slave_payload[node].command_response);
+            ESP_LOGI(TAG_NRF, slave_payload[node].position);
 
         } else {
-            ESP_LOGW(TAG, " Recieved: an empty ACK packet");  // empty ACK packet received
+            ESP_LOGW(TAG_NRF, " Recieved: an empty ACK packet");  // empty ACK packet received
         }
 
 
         } else {
-        ESP_LOGW(TAG, "Transmission failed or timed out");  // payload was not delivered
+        ESP_LOGW(TAG_NRF, "Transmission failed or timed out");  // payload was not delivered
         }
     }
 }

@@ -7,7 +7,7 @@
 #define NB_SLAVES 2
 #define RF_CHANNEL 0x76
 
-static const char *TAG = "comm_nrf24";
+static const char *TAG_NRF = "comm_nrf24";
 
 //defining the two nodes names
 // each half-duplex comm will be happening on their respective node

@@ -2,9 +2,12 @@
 
 // Log debug informations about transmisson 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    ESP_LOGD(TAG, "\r\nLast Packet Send Status:\t");
+    Serial.println("Last Packet Send Status:\t");
     if(status == ESP_NOW_SEND_SUCCESS){
-        ESP_LOGE(TAG,"Data Delivery Fail");
+        Serial.println("Data Delivery Fail");
+    }
+    else{
+      Serial.println("Data Delivery Success");
     }
 }
 
@@ -13,32 +16,40 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&master_payload, incomingData, sizeof(master_payload));
   
-  ESP_LOGI(TAG," Recieved ");
-  ESP_LOGI(TAG, len);
-  ESP_LOGI(TAG," bytes from  %02x:%02x:%02x:%02x:%02x:%02x : ",mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
-  ESP_LOGI(TAG, master_payload.connection_status);
-  ESP_LOGI(TAG, master_payload.traffic_light_state);
-  ESP_LOGI(TAG, master_payload.command);
+  Serial.println(" Recieved ");
+  Serial.println( len);
+  Serial.print(" from ");
+  Serial.print(mac[0]);
+  Serial.print(" : ");
+  Serial.print(mac[1]);
+  Serial.print(" : ");
+  Serial.print(mac[2]);
+  Serial.print(" : ");
+  Serial.print(mac[3]);
+  Serial.print(" : ");
+  Serial.print(mac[4]);
+  Serial.print(" : ");
+  Serial.println(mac[5]);
+  Serial.println( master_payload.connection_status);
+  Serial.println( master_payload.traffic_light_state);
+  Serial.println( master_payload.command);
 
   esp_err_t result = esp_now_send(mac_adress, (uint8_t *) &slave_payload, sizeof(slave_payload));
 
   if (result == ESP_OK) {
-    ESP_LOGI(TAG,"Sent with success");
+    Serial.println("Sent with success");
   }
   else {
-    ESP_LOGE(TAG,"Error sending the data");
+    Serial.println("Error sending the data");
   }
 }
 
 // Initialize ESP_NOW comm
 void init_comm_wifi() {
-  // Set device as a Wi-Fi Station
-  WiFi.mode(WIFI_STA);
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    ESP_LOGE(TAG, "Error initializing ESP-NOW");
+    Serial.println( "Error initializing ESP-NOW");
     return;
   }
 
@@ -53,8 +64,11 @@ void init_comm_wifi() {
     
   // Add peer        
   if (esp_now_add_peer(&peerInfo) != ESP_OK){
-    ESP_LOGE(TAG,"Failed to add master peer");
+    Serial.println("Failed to add master peer");
     return;
    }
+  else{
+      Serial.println("Added master ");
 
+    }
 }

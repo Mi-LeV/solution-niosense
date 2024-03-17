@@ -1,3 +1,6 @@
+#ifndef COMM_WIFI_H
+#define COMM_WIFI_H
+
 #include <esp_now.h>
 #include <WiFi.h>
 
@@ -11,7 +14,6 @@ struct MasterPayloadStruct {
   uint8_t traffic_light_state; // 0 : red, 1 : yellow, 2 : green
   uint8_t command; // 0 : idle, 1 : initialize, 2 : go, 3 : stop
 };
-MasterPayloadStruct master_payload;
 
 struct SlavePayloadStruct {
   bool connection_status; // 0 : No conn, 1 : connection
@@ -19,11 +21,14 @@ struct SlavePayloadStruct {
   uint8_t command_response; // 0 : NA, 1 : reset finished, 2 : stopped
 };
 
-SlavePayloadStruct slave_payload; // slave payload
-esp_now_peer_info_t peerInfo;
+extern MasterPayloadStruct master_payload;
+extern SlavePayloadStruct slave_payload;
+extern esp_now_peer_info_t peerInfo;
 
 void init_comm_wifi();
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 
 void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len);
+
+#endif

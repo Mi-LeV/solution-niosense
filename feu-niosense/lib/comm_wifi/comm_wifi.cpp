@@ -2,9 +2,12 @@
 
 // Log debug informations about transmisson 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    ESP_LOGD(TAG, "\r\nLast Packet Send Status:\t");
+    Serial.print( "\r\nLast Packet Send Status:\t");
     if(status == ESP_NOW_SEND_SUCCESS){
-        ESP_LOGE(TAG,"Data Delivery Fail");
+        Serial.println("Data Delivery Fail");
+    }
+    else{
+      Serial.println("Data Delivery Success");
     }
 }
 
@@ -23,30 +26,49 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
     }
   }
   if (slave_id == 2){
-    ESP_LOGE(TAG, "MAC adress of received message is not in the list : ");
-    ESP_LOGE(TAG, "%02x:%02x:%02x:%02x:%02x:%02x : ",mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    Serial.print( "MAC adress of received message is not in the list : ");
+    Serial.print(mac[0]);
+    Serial.print(" : ");
+    Serial.print(mac[1]);
+    Serial.print(" : ");
+    Serial.print(mac[2]);
+    Serial.print(" : ");
+    Serial.print(mac[3]);
+    Serial.print(" : ");
+    Serial.print(mac[4]);
+    Serial.print(" : ");
+    Serial.println(mac[5]);
   }
 
   memcpy(&slave_payload[slave_id], incomingData, sizeof(slave_payload));
   
-  ESP_LOGI(TAG," Recieved ");
-  ESP_LOGI(TAG, len);
-  ESP_LOGI(TAG," bytes from %02x:%02x:%02x:%02x:%02x:%02x : ",mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Serial.println(" Recieved ");
+  Serial.println( len);
+  Serial.print(" from ");
+  Serial.print(mac[0]);
+  Serial.print(" : ");
+  Serial.print(mac[1]);
+  Serial.print(" : ");
+  Serial.print(mac[2]);
+  Serial.print(" : ");
+  Serial.print(mac[3]);
+  Serial.print(" : ");
+  Serial.print(mac[4]);
+  Serial.print(" : ");
+  Serial.println(mac[5]);
 
-  ESP_LOGI(TAG, slave_payload[slave_id].connection_status);
-  ESP_LOGI(TAG, slave_payload[slave_id].command_response);
-  ESP_LOGI(TAG, slave_payload[slave_id].position);
+  Serial.println( slave_payload[slave_id].connection_status);
+  Serial.println( slave_payload[slave_id].command_response);
+  Serial.println( slave_payload[slave_id].position);
 
 }
 
 // Initialize ESP_NOW comm
 void init_comm_wifi() {
-  // Set device as a Wi-Fi Station
-  WiFi.mode(WIFI_STA);
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    ESP_LOGE(TAG, "Error initializing ESP-NOW");
+    Serial.println( "Error initializing ESP-NOW");
     return;
   }
 
@@ -63,8 +85,14 @@ void init_comm_wifi() {
     
     // Add peer        
     if (esp_now_add_peer(&peerInfo) != ESP_OK){
-      ESP_LOGE(TAG,"Failed to add slave %s",slave_nb);
-      return;
+      Serial.print("Failed to add slave ");
+      Serial.println(slave_nb);
+    }
+    else{
+      Serial.print("Added slave ");
+      Serial.print(slave_nb);
+      Serial.println(" successfully ");
+
     }
   }
 
@@ -77,10 +105,10 @@ void send_comm_wifi(){
     esp_err_t result = esp_now_send(mac_adresses[slave_nb], (uint8_t *) &master_payload, sizeof(master_payload));
 
     if (result == ESP_OK) {
-      ESP_LOGI(TAG,"Sent with success");
+      Serial.println("Master payload sent");
     }
     else {
-      ESP_LOGE(TAG,"Error sending the data");
+      Serial.println("Error sending the data");
     }
   }
 }
