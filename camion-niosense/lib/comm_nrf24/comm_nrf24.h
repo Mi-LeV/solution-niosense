@@ -4,16 +4,14 @@
 #define CE_PIN 7
 #define CSN_PIN 8
 
-#define NB_SLAVES 2
 #define RF_CHANNEL 0x76
 
 static const char *TAG = "comm_nrf24";
 
-//defining the two nodes names
-// each half-duplex comm will be happening on their respective node
+// choose the right node name corresponding to the slave id
 // Camion1 <-> Feu on node named Camion1
 // Camion2 <-> Feu on node named Camion2
-const uint8_t nodeAddresses[][8] = { "Camion1", "Camion2" };
+const uint8_t nodeAddress[8] = "Camion1" ;
 
 // instantiate an object for the nRF24L01 transceiver
 RF24 radio(CE_PIN, CSN_PIN);
@@ -31,8 +29,8 @@ struct SlavePayloadStruct {
   uint16_t position; // position on the test bed, ranging from 0 to 65536
   uint8_t command_response; // 0 : NA, 1 : reset finished, 2 : stopped
 };
-SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
+SlavePayloadStruct slave_payload; // slave payload
 
 void init_comm_nrf24();
 
-void send_and_receive_comm_nrf();
+void radioCheckAndReply();

@@ -2,11 +2,8 @@
 #include <WiFi.h>
 
 static const char *TAG = "comm_wifi";
-#define NB_SLAVES 2
-
 // REPLACE WITH YOUR RECEIVER MAC Address
-const uint8_t mac_adresses[2][6] = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
-                    ,{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}}; // slaves MAC adresses
+const uint8_t mac_adress[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // master MAC adress
 
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
@@ -21,8 +18,8 @@ struct SlavePayloadStruct {
   uint16_t position; // position on the test bed, ranging from 0 to 65536
   uint8_t command_response; // 0 : NA, 1 : reset finished, 2 : stopped
 };
-SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
 
+SlavePayloadStruct slave_payload; // slave payload
 esp_now_peer_info_t peerInfo;
 
 void init_comm_wifi();
@@ -30,5 +27,3 @@ void init_comm_wifi();
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 
 void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len);
-
-void send_comm_wifi();

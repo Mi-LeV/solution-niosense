@@ -1,5 +1,6 @@
 #include "comm_nrf24.h"
 
+// Init comm NRF24
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
@@ -34,19 +35,13 @@ void init_comm_nrf24() {
   // radio.printPrettyDetails(); // (larger) function that prints human readable data
 }
 
+/*
+Sends the current master_payload to each slave,
+and waits for each to return a slave_payload 
+which will the corresponding struct in the slave_payload[] list
+*/
 void send_and_receive_comm_nrf(){
-  /*
-  Sends the current master_payload to each slave,
-  and waits for each to return a slave_payload 
-  which will the corresponding struct in the slave_payload[] list
 
-  To use it : 
-  1. Modify master_payload
-  2. Call this function
-  3. Read the slave_payload[] array
-
-  If a communication fails, the slave_payload[] array will likely not get updated
-  */
 
 
   for (int node = 0 ; node < NB_SLAVES ; node++){
@@ -64,7 +59,6 @@ void send_and_receive_comm_nrf(){
             ESP_LOGI(TAG, pipe);  // print pipe number that received the ACK
             ESP_LOGI(TAG, " : ");
 
-            ESP_LOGI(TAG, slave_payload[slave_id].id);
             ESP_LOGI(TAG, slave_payload[node].connection_status);
             ESP_LOGI(TAG, slave_payload[node].command_response);
             ESP_LOGI(TAG, slave_payload[node].position);
