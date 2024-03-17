@@ -34,7 +34,12 @@ void init_steps_timer(uint64_t us_time)
 	ESP_ERROR_CHECK(esp_timer_start_periodic(steps_timer, us_time));
 }
 
-static void periodic_timer_callback(void* arg)
+void stop_steps_timer()
+{
+	ESP_ERROR_CHECK(esp_timer_stop(steps_timer));
+}
+
+void periodic_timer_callback(void* arg)
 {
 	cnt++;
 	if(cnt == 255)
@@ -51,7 +56,7 @@ static void periodic_timer_callback(void* arg)
 	// ESP_LOGI(TAG, "Periodic timer called, time since boot: %lld us", time_since_boot);
 }
 
-static void steps_timer_callback(void* arg)
+void steps_timer_callback(void* arg)
 {
 	do_steps++;
 }

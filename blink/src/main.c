@@ -17,7 +17,8 @@
 #define LEDC_FREQUENCY          (4000) // Frequency in Hertz. Set frequency at 4 kHz
 
 // static void periodic_timer_callback(void* arg);
-uint8_t do_steps;
+uint8_t do_steps = 0;
+uint64_t steps_cnt = 0;
 
 static void example_ledc_init(void)
 {
@@ -48,7 +49,7 @@ void app_main()
 {
 	// ESP_ERROR_CHECK(nvs_flash_init());
 	
-	printf("Hello world!\n");
+	//printf("Hello world!\n");
 	gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);
 	gpio_set_level(GPIO_NUM_2, 0);
 
@@ -61,7 +62,8 @@ void app_main()
     // ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
     // // Update duty to apply the new value
     // ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
-	do_steps = 100;
+	//do_steps = 100;
+	uint64_t nb_steps = 200;
 
 	while(1)
 	{
@@ -71,6 +73,13 @@ void app_main()
 			//level = gpio_get_level(GPIO_NUM_2);
 			do_steps -= ((do_steps == 2)*2);
 			gpio_set_level(GPIO_NUM_2, do_steps);
+			steps_cnt += do_steps;
+			printf("steps: %lld\r\n", steps_cnt);
+			if(nb_steps == steps_cnt)
+			{
+				printf("Bruhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\r\n");
+				stop_steps_timer();
+			}
 			// gpio_set_level(GPIO_NUM_2, !gpio_get_level(GPIO_NUM_2));
 			//do_steps--;
 		}

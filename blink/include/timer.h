@@ -4,7 +4,8 @@
 
 void init_periodic_timer();
 void init_steps_timer(uint64_t time);
-static void steps_timer_callback(void* arg);
-static void periodic_timer_callback(void* arg);
+void stop_steps_timer();
+void steps_timer_callback(void* arg);
+void periodic_timer_callback(void* arg);
 
 #endif
