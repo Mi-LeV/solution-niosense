@@ -14,7 +14,7 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 // The slave_payloads are received asynchronously, and saved inside the slave_payload[] list
 void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   uint8_t slave_id = 2;
-
+  
   for (int n = 0 ; n < 6 ; n++){
     if ( mac[n] != mac_adresses[0][n]){
       slave_id = 0;
@@ -27,17 +27,11 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   }
   if (slave_id == 2){
     Serial.print( "MAC adress of received message is not in the list : ");
-    Serial.print(mac[0]);
+    for(int n = 0 ; n < 6; n++){
+    Serial.print(mac[n],HEX);
     Serial.print(" : ");
-    Serial.print(mac[1]);
-    Serial.print(" : ");
-    Serial.print(mac[2]);
-    Serial.print(" : ");
-    Serial.print(mac[3]);
-    Serial.print(" : ");
-    Serial.print(mac[4]);
-    Serial.print(" : ");
-    Serial.println(mac[5]);
+    }
+    Serial.print("\n");
   }
 
   memcpy(&slave_payload[slave_id], incomingData, sizeof(slave_payload));
@@ -45,17 +39,11 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.println(" Recieved ");
   Serial.println( len);
   Serial.print(" from ");
-  Serial.print(mac[0]);
-  Serial.print(" : ");
-  Serial.print(mac[1]);
-  Serial.print(" : ");
-  Serial.print(mac[2]);
-  Serial.print(" : ");
-  Serial.print(mac[3]);
-  Serial.print(" : ");
-  Serial.print(mac[4]);
-  Serial.print(" : ");
-  Serial.println(mac[5]);
+  for(int n = 0 ; n < 6; n++){
+    Serial.print(mac[n],HEX);
+    Serial.print(" : ");
+  }
+  Serial.print("\n");
 
   Serial.println( slave_payload[slave_id].connection_status);
   Serial.println( slave_payload[slave_id].command_response);
@@ -66,6 +54,18 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
 // Initialize ESP_NOW comm
 void init_comm_wifi() {
 
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, NULL);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
+  }
+  Serial.println(WiFi.localIP());
+  
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println( "Error initializing ESP-NOW");

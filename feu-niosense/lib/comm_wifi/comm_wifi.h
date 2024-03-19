@@ -4,11 +4,14 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-#define NB_SLAVES 2
+#define NB_SLAVES 1
 
+const char* ssid = "ETS-Invites";
+
+const char* password = "xxx";
 // REPLACE WITH YOUR RECEIVER MAC Address
-const uint8_t mac_adresses[NB_SLAVES][6] = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
-                    ,{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}}; // slaves MAC adresses
+// master mac adress 0xFC,0xB4,0x67,0xF0,0xBB,0xEC
+const uint8_t mac_adresses[NB_SLAVES][6] = {{0xFC,0xB4,0x67,0xF0,0xC8,0x08}}; // slaves MAC adresses
 
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
@@ -23,9 +26,9 @@ typedef struct SlavePayloadStruct {
   uint8_t command_response; // 0 : NA, 1 : reset finished, 2 : stopped
 } SlavePayloadStruct;
 
-extern MasterPayloadStruct master_payload;
-extern SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
-extern esp_now_peer_info_t peerInfo;
+MasterPayloadStruct master_payload;
+SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
+esp_now_peer_info_t peerInfo;
 
 void init_comm_wifi();
 

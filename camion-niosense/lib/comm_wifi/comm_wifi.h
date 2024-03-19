@@ -4,9 +4,12 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-static const char *TAG = "comm_wifi";
+const char* ssid = "ETS-Invites";
+
+const char* password = "xxxxx";
 // REPLACE WITH YOUR RECEIVER MAC Address
-const uint8_t mac_adress[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // master MAC adress
+// camion1 adress is 0xFC,0xB4,0x67,0xF0,0xC8,0x08
+const uint8_t mac_adress[6] = {0xFC,0xB4,0x67,0xF0,0xBB,0xEC}; // master MAC adress
 
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
@@ -21,9 +24,9 @@ struct SlavePayloadStruct {
   uint8_t command_response; // 0 : NA, 1 : reset finished, 2 : stopped
 };
 
-extern MasterPayloadStruct master_payload;
-extern SlavePayloadStruct slave_payload;
-extern esp_now_peer_info_t peerInfo;
+MasterPayloadStruct master_payload;
+SlavePayloadStruct slave_payload;
+esp_now_peer_info_t peerInfo;
 
 void init_comm_wifi();
 

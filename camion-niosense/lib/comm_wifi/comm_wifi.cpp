@@ -19,17 +19,11 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.println(" Recieved ");
   Serial.println( len);
   Serial.print(" from ");
-  Serial.print(mac[0]);
-  Serial.print(" : ");
-  Serial.print(mac[1]);
-  Serial.print(" : ");
-  Serial.print(mac[2]);
-  Serial.print(" : ");
-  Serial.print(mac[3]);
-  Serial.print(" : ");
-  Serial.print(mac[4]);
-  Serial.print(" : ");
-  Serial.println(mac[5]);
+  for(int n = 0 ; n < 6; n++){
+    Serial.print(mac[n],HEX);
+    Serial.print(" : ");
+  }
+  Serial.print("\n");
   Serial.println( master_payload.connection_status);
   Serial.println( master_payload.traffic_light_state);
   Serial.println( master_payload.command);
@@ -37,15 +31,34 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
   esp_err_t result = esp_now_send(mac_adress, (uint8_t *) &slave_payload, sizeof(slave_payload));
 
   if (result == ESP_OK) {
-    Serial.println("Sent with success");
+    Serial.print("Payload sent to");
   }
   else {
-    Serial.println("Error sending the data");
+    Serial.print("Error sending the data to ");
   }
+  for(int n = 0 ; n < 6; n++){
+    Serial.print(mac_adress[n],HEX);
+    Serial.print(" : ");
+  }
+  Serial.print("\n");
 }
+  
+
 
 // Initialize ESP_NOW comm
 void init_comm_wifi() {
+
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, NULL);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
+  }
+  Serial.println(WiFi.localIP());
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
