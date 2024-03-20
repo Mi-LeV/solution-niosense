@@ -1,10 +1,22 @@
 #include "comm_nrf24.h"
 
+//defining the two nodes names
+// each half-duplex comm will be happening on their respective node
+// Camion1 <-> Feu on node named Camion1
+// Camion2 <-> Feu on node named Camion2
+const uint8_t nodeAddresses[][8] = { "Camion1"};
+
+// instantiate an object for the nRF24L01 transceiver
+RF24 radio(CE_PIN, CSN_PIN);
+
+MasterPayloadStruct master_payload;
+SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
+
 // Init comm NRF24
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    ESP_LOGE(TAG_NRF,"Radio hardware is not responding");
+    Serial.println("Radio hardware is not responding");
     while (1); // wait indefinitely
   }
 
@@ -42,34 +54,46 @@ which will the corresponding struct in the slave_payload[] list
 */
 void send_and_receive_comm_nrf(){
 
+  long start = millis();
 
+  master_payload.connection_status = !master_payload.connection_status;
+  master_payload.traffic_light_state  = ( master_payload.traffic_light_state + 1) % 3;
+  master_payload.command  = ( master_payload.command + 1) % 4;
 
-  for (int node = 0 ; node < NB_SLAVES ; node++){
+  for (uint8_t node = 0 ; node < NB_SLAVES ; node++){
     // setup a write pipe to current sensor node - must match the remote node listening pipe
+        Serial.println( "SENDING MASTER PAYLOAD : ");
+        Serial.print("\tConn status : ");
+        Serial.println( master_payload.connection_status);
+        Serial.print("\tLight state : ");
+        Serial.println( master_payload.traffic_light_state);
+        Serial.print("\tCommand : ");
+        Serial.println( master_payload.command);
+        
+
         radio.openWritingPipe(nodeAddresses[node]);
         bool response = radio.write(&master_payload, sizeof(master_payload));  // transmit & save the report
-
-        if (response) {
-        uint8_t pipe;
-        if (radio.available(&pipe)) {  // is there an ACK payload? grab the pipe number that received it
-            radio.read(&slave_payload[node], sizeof(slave_payload));  // get incoming ACK payload
-            ESP_LOGI(TAG_NRF," Recieved ");
-            ESP_LOGI(TAG_NRF, radio.getDynamicPayloadSize());  // print incoming payload size
-            ESP_LOGI(TAG_NRF, " bytes on pipe ");
-            ESP_LOGI(TAG_NRF, pipe);  // print pipe number that received the ACK
-            ESP_LOGI(TAG_NRF, " : ");
-
-            ESP_LOGI(TAG_NRF, slave_payload[node].connection_status);
-            ESP_LOGI(TAG_NRF, slave_payload[node].command_response);
-            ESP_LOGI(TAG_NRF, slave_payload[node].position);
-
-        } else {
-            ESP_LOGW(TAG_NRF, " Recieved: an empty ACK packet");  // empty ACK packet received
-        }
+        if (response) { 
+          radio.read(&slave_payload[node], sizeof(slave_payload[node]));
+          Serial.print( "RECEIVED SLAVE PAYLOAD FROM Camion");
+          Serial.println(node);
+          Serial.print("\tConn status : ");
+          Serial.println( slave_payload[node].connection_status);
+          Serial.print("\tPosition : ");
+          Serial.println( slave_payload[node].position);
+          Serial.print("\tCommand response : ");
+          Serial.println( slave_payload[node].command_response);
 
 
         } else {
-        ESP_LOGW(TAG_NRF, "Transmission failed or timed out");  // payload was not delivered
+          
+          Serial.println("TRANSMISSION FAILED");  // payload was not delivered
+          radio.flush_rx();
+          radio.flush_tx();
         }
     }
+
+    long stop = millis();
+    Serial.print("\tResponse time : ");
+    Serial.println(stop-start, 0);
 }

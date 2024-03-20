@@ -1,10 +1,22 @@
 #include "comm_nrf24.h"
 
+// instantiate an object for the nRF24L01 transceiver
+RF24 radio(CE_PIN, CSN_PIN);
+//VSPI is default, SPI1 is HSPI
+
+// choose the right node name corresponding to the slave id
+// Camion1 <-> Feu on node named Camion1
+// Camion2 <-> Feu on node named Camion2
+const uint8_t nodeAddress[8] = "Camion1" ;
+
+SlavePayloadStruct slave_payload; // slave payload
+MasterPayloadStruct master_payload;
+
 // Init comm NRF24
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    ESP_LOGE(TAG,"Radio hardware is not responding");
+    Serial.println("Radio hardware is not responding");
     while (1); // wait indefinitely
   }
 
@@ -49,10 +61,36 @@ void radioCheckAndReply(void)
 {
     // check for radio message and send sensor data using auto-ack
     if ( radio.available() ) {
+          long start = millis();
           radio.read( &master_payload, sizeof(master_payload) );
-          ESP_LOGI(TAG, "Received master payload, sending slave payload");
+
+          slave_payload.connection_status = !slave_payload.connection_status;
+          slave_payload.position ++;
+          slave_payload.command_response = ( slave_payload.command_response + 1) % 3;
+
+          Serial.println( "RECEIVED MASTER PAYLOAD : ");
+          Serial.print("\tConn status : ");
+          Serial.println( master_payload.connection_status);
+          Serial.print("\tLight state : ");
+          Serial.println( master_payload.traffic_light_state);
+          Serial.print("\tCommand : ");
+          Serial.println( master_payload.command);
+
+
+          Serial.println( "SENDING SLAVE PAYLOAD : ");
+          Serial.print("\tConn status : ");
+          Serial.println( slave_payload.connection_status);
+          Serial.print("\tPosition : ");
+          Serial.println( slave_payload.position);
+          Serial.print("\tCommand response : ");
+          Serial.println( slave_payload.command_response);
+
+          
 
           // update the node count after sending ack payload - provides continually changing data
           radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
+          long stop = millis();
+          Serial.print("\tResponse time : ");
+          Serial.println(stop-start, 0);
     }
 }
