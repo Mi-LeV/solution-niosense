@@ -61,13 +61,14 @@ void radioCheckAndReply(void)
 {
     // check for radio message and send sensor data using auto-ack
     if ( radio.available() ) {
-          long start = millis();
+          //long start = millis();
           radio.read( &master_payload, sizeof(master_payload) );
 
           slave_payload.connection_status = !slave_payload.connection_status;
           slave_payload.position ++;
           slave_payload.command_response = ( slave_payload.command_response + 1) % 3;
 
+          /*
           Serial.println( "RECEIVED MASTER PAYLOAD : ");
           Serial.print("\tConn status : ");
           Serial.println( master_payload.connection_status);
@@ -84,13 +85,13 @@ void radioCheckAndReply(void)
           Serial.println( slave_payload.position);
           Serial.print("\tCommand response : ");
           Serial.println( slave_payload.command_response);
-
+          */
           
 
           // update the node count after sending ack payload - provides continually changing data
           radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
-          long stop = millis();
-          Serial.print("\tResponse time : ");
-          Serial.println(stop-start, 0);
+          //long stop = millis();
+          //Serial.print("\tResponse time : ");
+          //Serial.println(stop-start, 0);
     }
 }

@@ -54,7 +54,7 @@ which will the corresponding struct in the slave_payload[] list
 */
 void send_and_receive_comm_nrf(){
 
-  long start = millis();
+  //long start = millis();
 
   master_payload.connection_status = !master_payload.connection_status;
   master_payload.traffic_light_state  = ( master_payload.traffic_light_state + 1) % 3;
@@ -62,6 +62,7 @@ void send_and_receive_comm_nrf(){
 
   for (uint8_t node = 0 ; node < NB_SLAVES ; node++){
     // setup a write pipe to current sensor node - must match the remote node listening pipe
+        /*
         Serial.println( "SENDING MASTER PAYLOAD : ");
         Serial.print("\tConn status : ");
         Serial.println( master_payload.connection_status);
@@ -69,12 +70,13 @@ void send_and_receive_comm_nrf(){
         Serial.println( master_payload.traffic_light_state);
         Serial.print("\tCommand : ");
         Serial.println( master_payload.command);
-        
+        */
 
         radio.openWritingPipe(nodeAddresses[node]);
         bool response = radio.write(&master_payload, sizeof(master_payload));  // transmit & save the report
         if (response) { 
           radio.read(&slave_payload[node], sizeof(slave_payload[node]));
+          /*
           Serial.print( "RECEIVED SLAVE PAYLOAD FROM Camion");
           Serial.println(node);
           Serial.print("\tConn status : ");
@@ -83,7 +85,7 @@ void send_and_receive_comm_nrf(){
           Serial.println( slave_payload[node].position);
           Serial.print("\tCommand response : ");
           Serial.println( slave_payload[node].command_response);
-
+          */
 
         } else {
           
@@ -93,7 +95,7 @@ void send_and_receive_comm_nrf(){
         }
     }
 
-    long stop = millis();
-    Serial.print("\tResponse time : ");
-    Serial.println(stop-start, 0);
+    //long stop = millis();
+    //Serial.print("\tResponse time : ");
+    //Serial.println(stop-start, 0);
 }
