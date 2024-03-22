@@ -4,8 +4,8 @@
 #define GPIO_DIR GPIO_NUM_32
 #define GPIO_STEP GPIO_NUM_32
 
-#define GPIO_MS1 GPIO_NUM_27
-#define GPIO_MS2 GPIO_NUM_26
+#define GPIO_MS1 GPIO_NUM_26
+#define GPIO_MS2 GPIO_NUM_27
 
 uint64_t nb_steps = 200;
 uint8_t direction = 1;
@@ -17,10 +17,14 @@ void setup() {
 	pinMode(GPIO_ENABLE, OUTPUT);
 	pinMode(GPIO_DIR, OUTPUT);
 	pinMode(GPIO_STEP, OUTPUT);
+	pinMode(GPIO_MS1, OUTPUT);
+	pinMode(GPIO_MS2, OUTPUT);
 	// put your setup code here, to run once:
 	// int result = myFunction(2, 3);
 	// uint64_t nb_steps = 200;
 	// uint8_t direction = 1;
+	digitalWrite(GPIO_MS1, HIGH);
+	digitalWrite(GPIO_MS2, HIGH);
 }
 
 void loop() {
@@ -29,6 +33,7 @@ void loop() {
 	digitalWrite(GPIO_DIR, direction);
 	for(uint64_t i = 0; i < nb_steps; i++)
 	{
+		if(i < nb_steps)
 		digitalWrite(GPIO_STEP, HIGH);
 		// gpio_set_level(GPIO_NUM_2, 1);
 		usleep(1000);
