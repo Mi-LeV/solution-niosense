@@ -57,32 +57,42 @@ void app_main()
 	init_steps_timer(500000);
 
 	// Set the LEDC peripheral configuration
-    // example_ledc_init();
-    // Set duty to 50%
-    // ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
-    // // Update duty to apply the new value
-    // ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+	// example_ledc_init();
+	// Set duty to 50%
+	// ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
+	// // Update duty to apply the new value
+	// ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
 	//do_steps = 100;
 	uint64_t nb_steps = 200;
+	uint8_t direction = 1;
 
 	while(1)
 	{
-		if(do_steps)
+		gpio_set_level(GPIO_NUM_4, direction);
+		for(uint64_t i = 0; i < nb_steps; i++)
 		{
-			//uint8_t level = 0;
-			//level = gpio_get_level(GPIO_NUM_2);
-			do_steps -= ((do_steps == 2)*2);
-			gpio_set_level(GPIO_NUM_2, do_steps);
-			steps_cnt += do_steps;
-			printf("steps: %lld\r\n", steps_cnt);
-			if(nb_steps == steps_cnt)
-			{
-				printf("Bruhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\r\n");
-				stop_steps_timer();
-			}
-			// gpio_set_level(GPIO_NUM_2, !gpio_get_level(GPIO_NUM_2));
-			//do_steps--;
+			gpio_set_level(GPIO_NUM_2, 1);
+			usleep(10000);
+			gpio_set_level(GPIO_NUM_2, 0);
+			usleep(10000);
 		}
+
+		// if(do_steps)
+		// {
+		// 	//uint8_t level = 0;
+		// 	//level = gpio_get_level(GPIO_NUM_2);
+		// 	do_steps -= ((do_steps == 2)*2);
+		// 	gpio_set_level(GPIO_NUM_2, do_steps);
+		// 	steps_cnt += do_steps;
+		// 	printf("steps: %lld\r\n", steps_cnt);
+		// 	if(nb_steps == steps_cnt)
+		// 	{
+		// 		printf("test\r\n");
+		// 		stop_steps_timer();
+		// 	}
+		// 	// gpio_set_level(GPIO_NUM_2, !gpio_get_level(GPIO_NUM_2));
+		// 	//do_steps--;
+		// }
 		//gpio_set_level(GPIO_NUM_2, 0);
 		//printf("Hello world!\n");
 		//gpio_set_level(GPIO_NUM_2, cnt%2);
