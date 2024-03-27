@@ -1,4 +1,5 @@
 #include "comm_nrf24.h"
+
 //defining the two nodes names
 // each half-duplex comm will be happening on their respective node
 // Camion1 <-> Feu on node named Camion1
@@ -12,11 +13,11 @@ MasterPayloadStruct master_payload;
 SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
 
 // Init comm NRF24
-bool init_comm_nrf24() {
+void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
     Serial.println("Radio hardware is not responding");
-    return false;
+    while (1); // wait indefinitely
   }
 
   radio.setPALevel(RF24_PA_LOW);  // power level of the radio
@@ -44,8 +45,6 @@ bool init_comm_nrf24() {
 
   // radio.printDetails();       // (smaller) function that prints raw register values
   // radio.printPrettyDetails(); // (larger) function that prints human readable data
-
-  return true;
 }
 
 /*
@@ -53,8 +52,8 @@ Sends the current master_payload to each slave,
 and waits for each to return a slave_payload 
 which will the corresponding struct in the slave_payload[] list
 */
-bool send_and_receive_comm_nrf(){
-  bool send_state = true;
+void send_and_receive_comm_nrf(){
+
   //long start = millis();
 
   master_payload.connection_status = !master_payload.connection_status;
@@ -93,12 +92,10 @@ bool send_and_receive_comm_nrf(){
           Serial.println("TRANSMISSION FAILED");  // payload was not delivered
           radio.flush_rx();
           radio.flush_tx();
-          send_state = false;
         }
     }
 
     //long stop = millis();
     //Serial.print("\tResponse time : ");
     //Serial.println(stop-start, 0);
-    return send_state;
 }

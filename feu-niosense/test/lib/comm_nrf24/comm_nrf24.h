@@ -6,6 +6,7 @@
 
 #define CE_PIN 15
 #define CSN_PIN 5
+#define LED 2
 
 #define NB_SLAVES 1
 #define RF_CHANNEL 0x76
@@ -26,8 +27,8 @@ struct SlavePayloadStruct {
 extern MasterPayloadStruct master_payload;
 extern SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
 
-bool init_comm_nrf24();
+void init_comm_nrf24();
 
-bool send_and_receive_comm_nrf();
+void send_and_receive_comm_nrf();
 
 #endif
