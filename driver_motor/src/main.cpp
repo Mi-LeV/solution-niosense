@@ -22,6 +22,7 @@ void setup() {
 	pinMode(GPIO_STEP, OUTPUT);
 	pinMode(GPIO_MS1, OUTPUT);
 	pinMode(GPIO_MS2, OUTPUT);
+	pinMode(GPIO_NUM_2, OUTPUT);
 	// stepper.setMaxSpeed(1000);
 	// stepper.setSpeed(50);	
 
@@ -46,7 +47,7 @@ void loop() {
     stepper.run();
   stepper.runToNewPosition(0); // Cause an overshoot then back to 0
 
-	// digitalWrite(GPIO_ENABLE, LOW);
+	digitalWrite(GPIO_NUM_2, HIGH);
 	// digitalWrite(GPIO_DIR, direction);
 	// for(uint64_t i = 0; i < nb_steps; i++)
 	// {
