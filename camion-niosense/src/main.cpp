@@ -96,7 +96,12 @@ void loop()
           direction = !direction;
         }
       }
+      stepper.setMaxSpeed(MAX_SPEED);
       stepper.run();
+    }
+    else
+    {
+      stepper.setMaxSpeed(0);
     }
   //}
   digitalWrite(GPIO_BLUE_LED, flag_pressed);
