@@ -20,6 +20,10 @@
 #define DIR_ARRIERE 0
 #define DIR_AVANT 1
 
+#define DIST_LOST 8000
+#define DIST_START 2000
+#define DIST_PASS ((DIST_LOST-DIST_START)/2)+DIST_START
+
 
 void init_motor(void);
 

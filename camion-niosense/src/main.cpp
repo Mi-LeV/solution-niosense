@@ -29,10 +29,13 @@ void setup(){
 	stepper.moveTo(END_POINT);
 
   Serial.println("Waiting for payload from master...");
+  // printf("\033[2J");
 
 }
 
-void loop(){
+void loop()
+{
+  // printf("\033[0;0H");
   /*stepper.setSpeed(800);
   go_to_pos = END_POINT;
  // if(go_to_pos == END_POINT)
@@ -75,35 +78,40 @@ void loop(){
   }
   //else
   //{
-    if(stepper.distanceToGo() == 0)
+    // printf("dist to go: %d\r\n", stepper.distanceToGo());
+    if(master_payload.traffic_light_state != 2)
     {
-      if(direction == DIR_AVANT)
+      if(stepper.distanceToGo() == 0)
       {
-        stepper.setCurrentPosition(END_POINT);
-        stepper.moveTo(START_POINT);
-        direction = !direction;
+        if(direction == DIR_AVANT)
+        {
+          stepper.setCurrentPosition(END_POINT);
+          stepper.moveTo(START_POINT);
+          direction = !direction;
+        }
+        else
+        {
+          stepper.setCurrentPosition(START_POINT);
+          stepper.moveTo(END_POINT);
+          direction = !direction;
+        }
       }
-      else
-      {
-        stepper.setCurrentPosition(START_POINT);
-        stepper.moveTo(END_POINT);
-        direction = !direction;
-      }
+      stepper.run();
     }
-    stepper.run();
   //}
   digitalWrite(GPIO_BLUE_LED, flag_pressed);
 
   radioCheckAndReply();
   // printf("\033[2J");
-  cnt_printf++;
+  // cnt_printf++;
 
-  if(cnt_printf >= 3000)
-  {
-    cnt_printf = 0;
-    printf("\033[2J");
-    printf("status : %d\r\n", master_payload.connection_status);
-    printf("light  : %d\r\n", master_payload.traffic_light_state);
-    printf("command: %d\r\n\r\n", master_payload.command);
-  }
+  // if(cnt_printf >= 3000)
+  // {
+  //   cnt_printf = 0;
+    // printf("\033[2J");
+    // printf("status : %d     \r\n", master_payload.connection_status);
+    // printf("light  : %d     \r\n", master_payload.traffic_light_state);
+    // printf("command: %d     \r\n\r\n", master_payload.command);
+    // fflush(stdout);
+  // }
 }
