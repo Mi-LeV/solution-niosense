@@ -13,7 +13,7 @@
 
             h1{
                 background-color: rgb(90, 90, 90);
-                border: 1px solid white;
+                border: 2px solid white;
             }
 
             table{
@@ -152,9 +152,8 @@
                 <td style="color: red" class="show">Déconnecté</td>
                 <td class="show">
                     <div class="slidecontainer">
-                        <input type="range" min="0" max="100" value="50" class="slider" id="vit1" onchange="updateTextInput(this.value)" 
-                        oninput="display1.value = vit1.value;">
-                        <input style="width: 40px; font-size: 20px" type="text" id="display1" disabled="disabled"></input>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit1">
+                        <div style="display: inline" id="vit1display">50</div>
                     </div></td>
                 </td>
             </tr>
@@ -163,9 +162,8 @@
                 <td style="color: red" class="show">Déconnecté</td>
                 <td class="show">
                     <div class="slidecontainer">
-                        <input type="range" min="0" max="100" value="50" class="slider" id="vit2" onchange="updateTextInput(this.value)"
-                        oninput="display2.value = vit2.value;">
-                        <input style="width: 40px; font-size: 20px" type="text" id="display2" disabled="disabled"></input>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit2">
+                        <div style="display: inline" id="vit2display">50</div>
                     </div></td>
                 </td>
             </tr>
@@ -173,8 +171,8 @@
         </br>
 
         <div class="distance">
-            <label for="distance">Distance (cm)</label>
-            <input style="width: 40px; font-size: 20px" type="number" id="distance" name="distance" min="0" max="30">
+            <label for="dist">Distance (cm)</label>
+            <input style="width: 40px; font-size: 20px" type="number" id="dist" name="distance" value="10" min="0" max="30">
         </div>
 
         <h2 align="center">Log File</h2>
@@ -189,21 +187,83 @@
             let startBtn = document.getElementById('start'); 
             let stopBtn = document.getElementById('stop'); 
             let resetBtn = document.getElementById('reset'); 
+
+            let sliderVit1 = document.getElementById('vit1');
+            let sliderVit2 = document.getElementById('vit2');
+            let inputDist = document.getElementById('dist');
             
             let hour = 0; 
             let minute = 0; 
             let second = 0; 
-            let count = 0; 
+            let count = 0;
+
+            sliderVit1.onchange = function(){
+                document.getElementById("vit1display").innerHTML = this.value;
+                setTimeout(sendVit1, 2000);
+            }
+
+            sliderVit2.onchange = function(){
+                document.getElementById("vit2display").innerHTML = this.value;
+                setTimeout(sendVit2, 2000);
+            }
+
+            inputDist.onchange = function(){
+                setTimeout(sendDistance, 2000);
+            }
+
+            function sendVit1(){
+                fetch("/vit1", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit1: document.getElementById('vit1').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
+
+            function sendVit2(){
+                fetch("/vit2", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit2: document.getElementById('vit2').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
+
+            function sendDistance() {
+                fetch("/dist", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        dist: document.getElementById('dist').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
             
             startBtn.addEventListener('click', function () { 
-                timer = true; 
-                stopWatch(); 
-            }); 
+                timer = true;
+                stopWatch();
+                sendStart();
+            });
             
             stopBtn.addEventListener('click', function () { 
-                timer = false; 
-            }); 
-            
+                timer = false;
+                sendStop(); 
+            });
+
             resetBtn.addEventListener('click', function () { 
                 timer = false; 
                 hour = 0; 
@@ -213,9 +273,52 @@
                 document.getElementById('hr').innerHTML = "00"; 
                 document.getElementById('min').innerHTML = "00"; 
                 document.getElementById('sec').innerHTML = "00"; 
-                document.getElementById('count').innerHTML = "00"; 
-            }); 
+                document.getElementById('count').innerHTML = "00";
+                sendReset();
+            });
             
+            function sendStart() {
+                fetch("/start", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        start: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
+
+            function sendStop() {
+                fetch("/stop", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        stop: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
+
+            function sendReset() {
+                fetch("/reset", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        reset: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            }
+
             function stopWatch() { 
                 if (timer) { 
                     count++; 
