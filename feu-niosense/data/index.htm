@@ -135,8 +135,6 @@
                 <span class="digit" id="sec"> 
                     00</span> 
                 <span class="txt">Sec</span> 
-                <span class="digit" id="count"> 
-                    00</span> 
             </div> 
         </div>
 
@@ -177,7 +175,7 @@
 
         <h2 align="center">Log File</h2>
 
-        <div class="scrollbox">%log file%</div>
+        <div class="scrollbox" id="log_file"></div>
         <div class="container" style="background-color: inherit">
             <button class="btn" id="download">Télécharger</button>
             <button class="btn" id="clear">Clear</button>
@@ -195,20 +193,19 @@
             let hour = 0; 
             let minute = 0; 
             let second = 0; 
-            let count = 0;
 
             sliderVit1.onchange = function(){
                 document.getElementById("vit1display").innerHTML = this.value;
-                setTimeout(sendVit1, 2000);
+                setTimeout(sendVit1, 1000);
             }
 
             sliderVit2.onchange = function(){
                 document.getElementById("vit2display").innerHTML = this.value;
-                setTimeout(sendVit2, 2000);
+                setTimeout(sendVit2, 1000);
             }
 
             inputDist.onchange = function(){
-                setTimeout(sendDistance, 2000);
+                setTimeout(sendDistance, 1000);
             }
 
             function sendVit1(){
@@ -222,7 +219,10 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
 
             function sendVit2(){
@@ -236,7 +236,10 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
 
             function sendDistance() {
@@ -250,12 +253,15 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
             
             startBtn.addEventListener('click', function () { 
                 timer = true;
-                stopWatch();
+                setTimeout(stopWatch, 1000);
                 sendStart();
             });
             
@@ -269,11 +275,9 @@
                 hour = 0; 
                 minute = 0; 
                 second = 0; 
-                count = 0; 
                 document.getElementById('hr').innerHTML = "00"; 
                 document.getElementById('min').innerHTML = "00"; 
                 document.getElementById('sec').innerHTML = "00"; 
-                document.getElementById('count').innerHTML = "00";
                 sendReset();
             });
             
@@ -288,7 +292,10 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
 
             function sendStop() {
@@ -302,7 +309,10 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
 
             function sendReset() {
@@ -316,17 +326,15 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
             }
 
             function stopWatch() { 
                 if (timer) { 
-                    count++; 
-            
-                    if (count == 100) { 
-                        second++; 
-                        count = 0; 
-                    } 
+                    second++; 
             
                     if (second == 60) { 
                         minute++; 
@@ -342,7 +350,6 @@
                     let hrString = hour; 
                     let minString = minute; 
                     let secString = second; 
-                    let countString = count; 
             
                     if (hour < 10) { 
                         hrString = "0" + hrString; 
@@ -356,15 +363,10 @@
                         secString = "0" + secString; 
                     } 
             
-                    if (count < 10) { 
-                        countString = "0" + countString; 
-                    } 
-            
                     document.getElementById('hr').innerHTML = hrString; 
                     document.getElementById('min').innerHTML = minString; 
-                    document.getElementById('sec').innerHTML = secString; 
-                    document.getElementById('count').innerHTML = countString; 
-                    setTimeout(stopWatch, 10); 
+                    document.getElementById('sec').innerHTML = secString;  
+                    setTimeout(stopWatch, 1000);
                 } 
             }
         </script>

@@ -11,6 +11,7 @@ JsonDocument jsonDocument;
 bool start = false;
 bool stop = true;
 bool reset = false;
+int vitesse1 = 0, vitesse2 = 0, distance = 10;
 
 struct run_time_t{
     int hours = 0;
@@ -24,7 +25,7 @@ void init_server(void){
     WiFi.softAP(SSID, PASSWORD);
     delay(100);
 
-    index_html = ouvrir_fichier(NOM_FICHIER);
+    index_html = ouvrir_fichier(NOM_PAGE_WEB);
 
     server.on ("/", handle_webpage);
     server.on ("/start", HTTP_POST, handle_start);
@@ -55,7 +56,15 @@ void handle_start(void){
         // Démarrer le timer
         TimerLib.setInterval_s(timer, 1);
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(START);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -70,7 +79,15 @@ void handle_stop(void){
         // Arrêter le timer
         TimerLib.clearTimer();
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(STOP);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -88,7 +105,15 @@ void handle_reset(void){
         run_time.minutes = 0;
         run_time.seconds = 0;
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(RESET);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -97,11 +122,19 @@ void handle_vitesse1(void){
         String body = server.arg("plain");
         deserializeJson(jsonDocument, body);
 
-        int vit1 = jsonDocument["vit1"];
+        vitesse1 = jsonDocument["vit1"];
         Serial.print("Vitesse1 : ");
-        Serial.println(vit1);
+        Serial.println(vitesse1);
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(VIT1_CHANGED);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -110,11 +143,19 @@ void handle_vitesse2(void){
         String body = server.arg("plain");
         deserializeJson(jsonDocument, body);
 
-        int vit2 = jsonDocument["vit2"];
+        vitesse2 = jsonDocument["vit2"];
         Serial.print("Vitesse2 : ");
-        Serial.println(vit2);
+        Serial.println(vitesse2);
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(VIT2_CHANGED);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -123,11 +164,19 @@ void handle_distance(void){
         String body = server.arg("plain");
         deserializeJson(jsonDocument, body);
 
-        int dist = jsonDocument["dist"];
+        distance = jsonDocument["dist"];
         Serial.print("Distance : ");
-        Serial.println(dist);
+        Serial.println(distance);
 
-        server.send(200, "application/json", "{}");
+        JsonDocument doc;
+        String ligne = new_line(DIST_CHANGED);
+        char response[100];
+
+        doc["new_line"] = ligne;
+        serializeJson(doc, response);
+        server.send(200, "application/json", response);
+
+        appendFile(NOM_FICHIER_LOG, ligne.c_str());
     }
 }
 
@@ -163,4 +212,32 @@ void timer(void){
     }
     // pour test
     Serial.printf("%02d:%02d:%02d\n", run_time.hours, run_time.minutes, run_time.seconds);
+}
+
+String new_line(event_t event){
+    String str;
+    char str2[10];
+    sprintf(str2, "%02d:%02d:%02d\t", run_time.hours, run_time.minutes, run_time.seconds);
+    str = str2;
+    switch(event){
+        case START:
+            str += "Début du test\n";
+            break;
+        case STOP:
+            str += "Test mis sur pause\n";
+            break;
+        case RESET:
+            str += "Remise à 0 du minuteur de test\n"; // ou peut-être fin du test?
+            break;
+        case VIT1_CHANGED:
+            str += "Vitesse du camion 1 modifiée à : " + String(vitesse1) + "\n";
+            break;
+        case VIT2_CHANGED:
+            str += "Vitesse du camion 2 modifiée à : " + String(vitesse2) + "\n";
+            break;
+        case DIST_CHANGED:
+            str += "Distance modifiée à : " + String(distance) + "\n";
+            break;
+    }
+    return str;
 }
