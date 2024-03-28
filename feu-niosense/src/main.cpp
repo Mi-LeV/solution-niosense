@@ -1,10 +1,13 @@
- #include "comm_nrf24.h"
+#include <Arduino.h>
+#include "server.h"
+#include "comm_nrf24.h"
 
 void setup(){
   Serial.begin(115200);
   Serial.println("BOARD : MASTER");
 
   init_comm_nrf24();
+  init_server();
 }
 
 void loop(){
@@ -20,6 +23,6 @@ void loop(){
 
 
   //algo_light()
-  //serve_webpage()
+  handle_client();
   //upload_data()
 }

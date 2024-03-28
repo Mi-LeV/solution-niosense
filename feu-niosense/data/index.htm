@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+    <title>Banc d'essai</title>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                background-color: black;
+                color: white;
+                margin-left: 40px;
+                margin-right: 40px;
+            }
+
+            h1{
+                background-color: rgb(90, 90, 90);
+                border: 2px solid white;
+            }
+
+            table{
+                text-align: center;
+                width: 75%;
+                table-layout: fixed;
+                border-collapse: collapse;
+                margin: auto;
+            }
+
+            table td.show{
+                background-color: rgb(90, 90, 90); 
+			    border: 2px solid white;
+                font-size: 20px;
+                padding: 5px;
+            }
+
+            div.distance{
+                width: 200px;
+                padding: 10px;
+                text-align: center;
+                font-size: 20px;
+                border: 2px solid white;
+                background-color: rgb(90, 90, 90);
+                margin: auto;
+            }
+
+            div.scrollbox{
+                overflow: auto;
+                width: 75%;
+                height: 200px;
+                border: 2px solid white;
+                background-color: rgb(90, 90, 90);
+                margin: auto;
+            }
+
+            .container { 
+                display: flex; 
+                justify-content: center; 
+                align-items: center;
+                margin: auto;
+                padding: 10px;
+                background-color: rgb(90, 90, 90); 
+            } 
+
+            .digit { 
+                font-size: 24px; 
+                color: #fff; 
+            } 
+            
+            .txt { 
+                font-size: 24px; 
+                color: #fffcd6; 
+            } 
+            
+            #buttons { 
+                margin-right: 20px; 
+            } 
+            
+            .btn { 
+                margin: 0px 10px; 
+                border-top-right-radius: 10px; 
+                border-bottom-left-radius: 10px; 
+                border-bottom-right-radius: 4px; 
+                border-top-left-radius: 4px; 
+                cursor: pointer; 
+                font-size: 16px; 
+                transition: 0.5s; 
+                color: white; 
+                font-weight: 500; 
+            } 
+            
+            #start { 
+                width: 60px;
+                background-color: #119d01; 
+            } 
+  
+            #stop { 
+                width: 60px;
+                background-color: #b4ba04; 
+            } 
+            
+            #reset { 
+                width: 60px;
+                background-color: #c91400; 
+            }
+
+            #download { 
+                width: 100px;
+                background-color: rgb(90, 90, 90); 
+            }
+
+            #clear { 
+                width: 60px;
+                background-color: rgb(90, 90, 90); 
+            }
+        </style>
+    </head>
+    <body>
+        <h1 align="center">Interface du banc d'essai</h1>
+
+        <div class="container" style="width: 50%">
+             
+            <div id="buttons"> 
+                <button class="btn" id="start"> 
+                    Start</button> 
+                <button class="btn" id="stop"> 
+                    Stop</button> 
+                <button class="btn" id="reset"> 
+                    Reset</button> 
+            </div>
+            <div id="time"> 
+                <span class="digit" id="hr"> 
+                    00</span> 
+                <span class="txt">Hr</span> 
+                <span class="digit" id="min"> 
+                    00</span> 
+                <span class="txt">Min</span> 
+                <span class="digit" id="sec"> 
+                    00</span> 
+                <span class="txt">Sec</span> 
+            </div> 
+        </div>
+
+        </br>
+        <table align="center">
+            <tr>
+                <td></td>
+                <td class="show">Status</td>
+                <td class="show">Vitesse (%)</td>
+            </tr>
+            <tr>
+                <td class="show">Camion 1</td>
+                <td style="color: red" class="show">Déconnecté</td>
+                <td class="show">
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit1">
+                        <div style="display: inline" id="vit1display">50</div>
+                    </div></td>
+                </td>
+            </tr>
+            <tr>
+                <td class="show">Camion 2</td>
+                <td style="color: red" class="show">Déconnecté</td>
+                <td class="show">
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit2">
+                        <div style="display: inline" id="vit2display">50</div>
+                    </div></td>
+                </td>
+            </tr>
+        </table>
+        </br>
+
+        <div class="distance">
+            <label for="dist">Distance (cm)</label>
+            <input style="width: 40px; font-size: 20px" type="number" id="dist" name="distance" value="10" min="0" max="30">
+        </div>
+
+        <h2 align="center">Log File</h2>
+
+        <div class="scrollbox" id="log_file"></div>
+        <div class="container" style="background-color: inherit">
+            <button class="btn" id="download">Télécharger</button>
+            <button class="btn" id="clear">Clear</button>
+        </div>
+
+        <script>
+            let startBtn = document.getElementById('start'); 
+            let stopBtn = document.getElementById('stop'); 
+            let resetBtn = document.getElementById('reset'); 
+
+            let sliderVit1 = document.getElementById('vit1');
+            let sliderVit2 = document.getElementById('vit2');
+            let inputDist = document.getElementById('dist');
+            
+            let hour = 0; 
+            let minute = 0; 
+            let second = 0; 
+
+            sliderVit1.onchange = function(){
+                document.getElementById("vit1display").innerHTML = this.value;
+                setTimeout(sendVit1, 1000);
+            }
+
+            sliderVit2.onchange = function(){
+                document.getElementById("vit2display").innerHTML = this.value;
+                setTimeout(sendVit2, 1000);
+            }
+
+            inputDist.onchange = function(){
+                setTimeout(sendDistance, 1000);
+            }
+
+            function sendVit1(){
+                fetch("/vit1", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit1: document.getElementById('vit1').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+
+            function sendVit2(){
+                fetch("/vit2", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit2: document.getElementById('vit2').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+
+            function sendDistance() {
+                fetch("/dist", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        dist: document.getElementById('dist').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+            
+            startBtn.addEventListener('click', function () { 
+                timer = true;
+                setTimeout(stopWatch, 1000);
+                sendStart();
+            });
+            
+            stopBtn.addEventListener('click', function () { 
+                timer = false;
+                sendStop(); 
+            });
+
+            resetBtn.addEventListener('click', function () { 
+                timer = false; 
+                hour = 0; 
+                minute = 0; 
+                second = 0; 
+                document.getElementById('hr').innerHTML = "00"; 
+                document.getElementById('min').innerHTML = "00"; 
+                document.getElementById('sec').innerHTML = "00"; 
+                sendReset();
+            });
+            
+            function sendStart() {
+                fetch("/start", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        start: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+
+            function sendStop() {
+                fetch("/stop", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        stop: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+
+            function sendReset() {
+                fetch("/reset", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        reset: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                });
+            }
+
+            function stopWatch() { 
+                if (timer) { 
+                    second++; 
+            
+                    if (second == 60) { 
+                        minute++; 
+                        second = 0; 
+                    } 
+            
+                    if (minute == 60) { 
+                        hour++; 
+                        minute = 0; 
+                        second = 0; 
+                    } 
+            
+                    let hrString = hour; 
+                    let minString = minute; 
+                    let secString = second; 
+            
+                    if (hour < 10) { 
+                        hrString = "0" + hrString; 
+                    } 
+            
+                    if (minute < 10) { 
+                        minString = "0" + minString; 
+                    } 
+            
+                    if (second < 10) { 
+                        secString = "0" + secString; 
+                    } 
+            
+                    document.getElementById('hr').innerHTML = hrString; 
+                    document.getElementById('min').innerHTML = minString; 
+                    document.getElementById('sec').innerHTML = secString;  
+                    setTimeout(stopWatch, 1000);
+                } 
+            }
+        </script>
+    </body>
+</html>
