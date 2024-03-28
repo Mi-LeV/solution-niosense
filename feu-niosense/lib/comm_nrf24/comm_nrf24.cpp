@@ -38,7 +38,9 @@ bool init_comm_nrf24() {
   radio.enableAckPayload();
 
   // initialize the master_payload to inoffensive values
-  master_payload.connection_status = false;
+  for (int n = 0 ; n < NB_SLAVES ; n++){
+    master_payload.connection_status[n] = false;
+  }
   master_payload.traffic_light_state = 0;
   master_payload.command = 0;
 
@@ -56,10 +58,6 @@ which will the corresponding struct in the slave_payload[] list
 bool send_and_receive_comm_nrf(){
   bool send_state = true;
   //long start = millis();
-
-  master_payload.connection_status = !master_payload.connection_status;
-  master_payload.traffic_light_state  = ( master_payload.traffic_light_state + 1) % 3;
-  master_payload.command  = ( master_payload.command + 1) % 4;
 
   for (uint8_t node = 0 ; node < NB_SLAVES ; node++){
     // setup a write pipe to current sensor node - must match the remote node listening pipe

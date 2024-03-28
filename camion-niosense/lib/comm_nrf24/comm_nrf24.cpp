@@ -64,10 +64,6 @@ void radioCheckAndReply(void)
           //long start = millis();
           radio.read( &master_payload, sizeof(master_payload) );
 
-          slave_payload.connection_status = !slave_payload.connection_status;
-          slave_payload.position ++;
-          slave_payload.command_response = ( slave_payload.command_response + 1) % 3;
-
           /*
           Serial.println( "RECEIVED MASTER PAYLOAD : ");
           Serial.print("\tConn status : ");
