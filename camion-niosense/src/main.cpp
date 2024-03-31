@@ -5,6 +5,10 @@
 #define LIMIT_SWITCH_0 14
 #define GPIO_BLUE_LED GPIO_NUM_2
 
+#define GREEN   0
+#define YELLOW  1
+#define RED     2
+
 uint64_t nb_steps = 200;
 uint8_t direction = DIR_AVANT;
 AccelStepper stepper(AccelStepper::DRIVER, GPIO_STEP, GPIO_DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
@@ -79,7 +83,7 @@ void loop()
   //else
   //{
     // printf("dist to go: %d\r\n", stepper.distanceToGo());
-    if(master_payload.traffic_light_state != 2)
+    if(master_payload.traffic_light_state != 2) //si 
     {
       if(stepper.distanceToGo() == 0)
       {
