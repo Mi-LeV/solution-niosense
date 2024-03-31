@@ -83,7 +83,7 @@ void loop()
   //else
   //{
     // printf("dist to go: %d\r\n", stepper.distanceToGo());
-    if(master_payload.traffic_light_state != 2) //si 
+    if(master_payload.traffic_light_state != RED) 
     {
       if(stepper.distanceToGo() == 0)
       {
@@ -102,6 +102,14 @@ void loop()
       }
       stepper.setMaxSpeed(MAX_SPEED);
       stepper.run();
+    }
+    else if(master_payload.traffic_light_state == RED && direction == DIR_AVANT && stepper.currentPosition < DIST_PASS_LOW)
+    {
+      stepper.moveTo(DIST_PASS_LOW);
+    }
+    else if(master_payload.traffic_light_state == RED && direction == DIR_ARRIERE && stepper.currentPosition > DIST_PASS_HIGH)
+    {
+      stepper.moveTo(DIST_PASS_HIGH);
     }
     else
     {

@@ -14,15 +14,19 @@
 #define MAX_SPEED 4000
 #define ACCELERATION 2000
 
-#define START_POINT 0
-#define END_POINT 10000
-
 #define DIR_ARRIERE 0
 #define DIR_AVANT 1
 
-#define DIST_LOST 8000
-#define DIST_START 2000
-#define DIST_PASS ((DIST_LOST-DIST_START)/2)+DIST_START
+#define START_POINT 0
+#define END_POINT 10000
+
+#define LONG_INTERSECTION END_POINT/10
+
+//pris comme si le camion avance
+#define DIST_START END_POINT/5      //distance ou la communication commence
+#define DIST_LOST DIST_START*4      //distance ou la communication est perdu
+#define DIST_PASS_LOW (END_POINT/2)-(LONG_INTERSECTION/2)       //distance ou le camion est considéré à l'intersection
+#define DIST_PASS_HIGH (END_POINT/2)+(LONG_INTERSECTION/2)      //distance ou le camion sort de l'intersection 
 
 
 void init_motor(void);
