@@ -1,4 +1,5 @@
 //#include "comm_wifi.h"
+#include <stdlib.h>
 #include "comm_nrf24.h"
 #include "motor.h"
 
@@ -84,7 +85,20 @@ void loop()
   //else
   //{
     // printf("dist to go: %d\r\n", stepper.distanceToGo());
-    if(master_payload.traffic_light_state != RED) 
+    
+    if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() < DIST_PASS_LOW))
+    {
+      stepper.moveTo(DIST_PASS_LOW);
+      flag_red_light = true;
+      stepper.run();
+    }
+    else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() > DIST_PASS_HIGH))
+    {
+      stepper.moveTo(DIST_PASS_HIGH);
+      flag_red_light = true;
+      stepper.run();
+    }
+    else 
     {
       if(stepper.distanceToGo() == 0)
       {
@@ -120,34 +134,25 @@ void loop()
       stepper.setMaxSpeed(MAX_SPEED);
       stepper.run();
     }
-    else if(master_payload.traffic_light_state == RED && direction == DIR_AVANT && stepper.currentPosition < DIST_PASS_LOW)
-    {
-      stepper.moveTo(DIST_PASS_LOW);
-      flag_red_light = true;
-    }
-    else if(master_payload.traffic_light_state == RED && direction == DIR_ARRIERE && stepper.currentPosition > DIST_PASS_HIGH)
-    {
-      stepper.moveTo(DIST_PASS_HIGH);
-      flag_red_light = true;
-    }
-    else
-    {
-      stepper.setMaxSpeed(0);
-    }
+    //else
+    //{
+     // stepper.setMaxSpeed(0);
+    //}
   //}
   digitalWrite(GPIO_BLUE_LED, flag_pressed);
 
   radioCheckAndReply();
   // printf("\033[2J");
-  // cnt_printf++;
+   cnt_printf++;
 
-  // if(cnt_printf >= 3000)
-  // {
-  //   cnt_printf = 0;
-    // printf("\033[2J");
-    // printf("status : %d     \r\n", master_payload.connection_status);
-    // printf("light  : %d     \r\n", master_payload.traffic_light_state);
-    // printf("command: %d     \r\n\r\n", master_payload.command);
-    // fflush(stdout);
-  // }
+   if(cnt_printf >= 3000)
+   {
+     cnt_printf = 0;
+     printf("status : %d     \r\n", master_payload.connection_status);
+     printf("light  : %d     \r\n", master_payload.traffic_light_state);
+     printf("command: %d     \r\n\r\n", master_payload.command);
+     printf("dir: %s\r\n",(direction == DIR_AVANT)?"AVANT":"ARRIERE");
+     printf("pos: %d\r\n",stepper.currentPosition());
+     //fflush(stdout);
+   }
 }
