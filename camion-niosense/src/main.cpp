@@ -14,6 +14,7 @@ uint8_t direction = DIR_AVANT;
 AccelStepper stepper(AccelStepper::DRIVER, GPIO_STEP, GPIO_DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 uint64_t go_to_pos = 0;
 uint8_t flag_pressed = false;
+uint8_t flag_red_light = false;
 
 uint64_t cnt_printf = 0;
 
@@ -89,15 +90,31 @@ void loop()
       {
         if(direction == DIR_AVANT)
         {
-          stepper.setCurrentPosition(END_POINT);
-          stepper.moveTo(START_POINT);
-          direction = !direction;
+          if(flag_red_light)
+          {
+            stepper.moveTo(END_POINT);
+            flag_red_light = false;
+          }
+          else
+          {
+            stepper.setCurrentPosition(END_POINT);
+            stepper.moveTo(START_POINT);
+            direction = !direction;
+          }
         }
         else
         {
-          stepper.setCurrentPosition(START_POINT);
-          stepper.moveTo(END_POINT);
-          direction = !direction;
+          if(flag_red_light)
+          {
+            stepper.moveTo(START_POINT);
+            flag_red_light = false;
+          }
+          else
+          {
+            stepper.setCurrentPosition(START_POINT);
+            stepper.moveTo(END_POINT);
+            direction = !direction;
+          }
         }
       }
       stepper.setMaxSpeed(MAX_SPEED);
@@ -106,10 +123,12 @@ void loop()
     else if(master_payload.traffic_light_state == RED && direction == DIR_AVANT && stepper.currentPosition < DIST_PASS_LOW)
     {
       stepper.moveTo(DIST_PASS_LOW);
+      flag_red_light = true;
     }
     else if(master_payload.traffic_light_state == RED && direction == DIR_ARRIERE && stepper.currentPosition > DIST_PASS_HIGH)
     {
       stepper.moveTo(DIST_PASS_HIGH);
+      flag_red_light = true;
     }
     else
     {
