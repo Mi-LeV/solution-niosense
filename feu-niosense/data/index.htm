@@ -91,12 +91,12 @@
                 background-color: #119d01; 
             } 
   
-            #stop { 
+            #pause { 
                 width: 60px;
                 background-color: #b4ba04; 
             } 
             
-            #reset { 
+            #stop { 
                 width: 60px;
                 background-color: #c91400; 
             }
@@ -120,10 +120,10 @@
             <div id="buttons"> 
                 <button class="btn" id="start"> 
                     Start</button> 
+                <button class="btn" id="pause"> 
+                    Pause</button> 
                 <button class="btn" id="stop"> 
                     Stop</button> 
-                <button class="btn" id="reset"> 
-                    Reset</button> 
             </div>
             <div id="time"> 
                 <span class="digit" id="hr"> 
@@ -147,7 +147,7 @@
             </tr>
             <tr>
                 <td class="show">Camion 1</td>
-                <td style="color: red" class="show">Déconnecté</td>
+                <td style="color: red" class="show" id="stat1">Déconnecté</td>
                 <td class="show">
                     <div class="slidecontainer">
                         <input type="range" min="0" max="100" value="50" class="slider" id="vit1">
@@ -157,7 +157,7 @@
             </tr>
             <tr>
                 <td class="show">Camion 2</td>
-                <td style="color: red" class="show">Déconnecté</td>
+                <td style="color: red" class="show" id="stat2">Déconnecté</td>
                 <td class="show">
                     <div class="slidecontainer">
                         <input type="range" min="0" max="100" value="50" class="slider" id="vit2">
@@ -183,13 +183,14 @@
 
         <script>
             let startBtn = document.getElementById('start'); 
+            let pauseBtn = document.getElementById('pause'); 
             let stopBtn = document.getElementById('stop'); 
-            let resetBtn = document.getElementById('reset'); 
 
             let sliderVit1 = document.getElementById('vit1');
             let sliderVit2 = document.getElementById('vit2');
             let inputDist = document.getElementById('dist');
             
+            var timer = false;
             let hour = 0; 
             let minute = 0; 
             let second = 0; 
@@ -218,10 +219,9 @@
                         "Content-type": "application/json; charset=UTF-8"
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
             }
 
@@ -235,10 +235,9 @@
                         "Content-type": "application/json; charset=UTF-8"
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
             }
 
@@ -253,24 +252,25 @@
                     }
                 })
                 .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
             }
             
             startBtn.addEventListener('click', function () { 
-                timer = true;
-                setTimeout(stopWatch, 1000);
-                sendStart();
+                if(!timer){
+                    timer = true;
+                    setTimeout(stopWatch, 1000);
+                    sendStart();
+                }
             });
             
-            stopBtn.addEventListener('click', function () { 
+            pauseBtn.addEventListener('click', function () { 
                 timer = false;
-                sendStop(); 
+                sendPause(); 
             });
 
-            resetBtn.addEventListener('click', function () { 
+            stopBtn.addEventListener('click', function () { 
                 timer = false; 
                 hour = 0; 
                 minute = 0; 
@@ -278,7 +278,7 @@
                 document.getElementById('hr').innerHTML = "00"; 
                 document.getElementById('min').innerHTML = "00"; 
                 document.getElementById('sec').innerHTML = "00"; 
-                sendReset();
+                sendStop();
             });
             
             function sendStart() {
@@ -291,10 +291,25 @@
                         "Content-type": "application/json; charset=UTF-8"
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                });
+            }
+
+            function sendPause() {
+                fetch("/pause", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        pause: 1
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
             }
 
@@ -308,34 +323,44 @@
                         "Content-type": "application/json; charset=UTF-8"
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
             }
 
-            function sendReset() {
-                fetch("/reset", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        reset: 1
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
+            setInterval(function(){
+                fetch("/status")
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status1 == "1"){
+                        document.getElementById('stat1').innerHTML = "Connecté";
+                        document.getElementById('stat1').style.color = "#08f500";
+                    }else{
+                        document.getElementById('stat1').innerHTML = "Déconnecté";
+                        document.getElementById('stat1').style.color = "red";
+                    }
+                    if(data.status2 == "1"){
+                        document.getElementById('stat2').innerHTML = "Connecté";
+                        document.getElementById('stat2').style.color = "#08f500";
+                    }else{
+                        document.getElementById('stat2').innerHTML = "Déconnecté";
+                        document.getElementById('stat2').style.color = "red";
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    document.getElementById('log_file').innerHTML += data.new_line + "\n";
+                .catch(err => {
+                    document.getElementById('stat1').innerHTML = "Déconnecté";
+                    document.getElementById('stat1').style.color = "red";
+                    document.getElementById('stat2').innerHTML = "Déconnecté";
+                    document.getElementById('stat2').style.color = "red";
                 });
-            }
+            }, 3000);
 
             function stopWatch() { 
                 if (timer) { 
+                    setTimeout(stopWatch, 1000);
+                    
                     second++; 
-            
                     if (second == 60) { 
                         minute++; 
                         second = 0; 
@@ -366,7 +391,6 @@
                     document.getElementById('hr').innerHTML = hrString; 
                     document.getElementById('min').innerHTML = minString; 
                     document.getElementById('sec').innerHTML = secString;  
-                    setTimeout(stopWatch, 1000);
                 } 
             }
         </script>
