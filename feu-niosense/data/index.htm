@@ -24,11 +24,16 @@
                 margin: auto;
             }
 
-            table td.show{
+            table td{
                 background-color: rgb(90, 90, 90); 
 			    border: 2px solid white;
                 font-size: 20px;
                 padding: 5px;
+            }
+
+            table td.hide{
+                background-color: inherit; 
+			    border: none;
             }
 
             div.distance{
@@ -141,29 +146,32 @@
         </br>
         <table align="center">
             <tr>
-                <td></td>
-                <td class="show">Status</td>
-                <td class="show">Vitesse (%)</td>
+                <td class="hide"></td>
+                <td>Status</td>
+                <td>Vitesse (%)</td>
+                <td>Nb de déconnexions</td>
             </tr>
             <tr>
-                <td class="show">Camion 1</td>
-                <td style="color: red" class="show" id="stat1">Déconnecté</td>
-                <td class="show">
+                <td>Camion 1</td>
+                <td style="color: red" id="stat1">Déconnecté</td>
+                <td>
                     <div class="slidecontainer">
                         <input type="range" min="0" max="100" value="50" class="slider" id="vit1">
                         <div style="display: inline" id="vit1display">50</div>
                     </div></td>
                 </td>
+                <td id="nb_decon_1">0</td>
             </tr>
             <tr>
-                <td class="show">Camion 2</td>
-                <td style="color: red" class="show" id="stat2">Déconnecté</td>
-                <td class="show">
+                <td>Camion 2</td>
+                <td style="color: red" id="stat2">Déconnecté</td>
+                <td>
                     <div class="slidecontainer">
                         <input type="range" min="0" max="100" value="50" class="slider" id="vit2">
                         <div style="display: inline" id="vit2display">50</div>
                     </div></td>
                 </td>
+                <td id="nb_decon_2">0</td>
             </tr>
         </table>
         </br>
@@ -343,7 +351,7 @@
             }
 
             setInterval(function(){
-                fetch("/status")
+                fetch("/data")
                 .then(response => response.json())
                 .then(data => {
                     if(data.status1 == "1"){
@@ -360,6 +368,8 @@
                         document.getElementById('stat2').innerHTML = "Déconnecté";
                         document.getElementById('stat2').style.color = "red";
                     }
+                    document.getElementById('nb_decon_1').innerHTML = data.nb_decon_1;
+                    document.getElementById('nb_decon_2').innerHTML = data.nb_decon_2;
                 })
                 .catch(err => {
                     document.getElementById('stat1').innerHTML = "Déconnecté";

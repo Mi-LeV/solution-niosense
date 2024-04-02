@@ -15,6 +15,7 @@ int vitesse1_desire = 0, vitesse2_desire = 0, distance_desire = 10;
 
 // Déclarés dans le module NRF...
 extern bool status1, status2;
+extern int nb_deconnexions_1, nb_deconnexions_2;
 
 struct run_time_t{
     int hours = 0;
@@ -42,7 +43,7 @@ void init_server(void){
     server.on ("/vit2", HTTP_POST, handle_vitesse2);
     server.on ("/dist", HTTP_POST, handle_distance);
     server.on ("/clear", HTTP_POST, handle_clear);
-    server.on ("/status", HTTP_GET, handle_status);
+    server.on ("/data", HTTP_GET, handle_data);
     server.on ("/download", HTTP_GET, handle_download);
     server.onNotFound(handle_404);
 
@@ -192,12 +193,14 @@ void handle_distance(void){
     }
 }
 
-void handle_status(void){
+void handle_data(void){
     JsonDocument doc;
     char response[100];
 
     doc["status1"] = status1;
     doc["status2"] = status2;
+    doc["nb_decon_1"] = nb_deconnexions_1;
+    doc["nb_decon_2"] = nb_deconnexions_2;
     serializeJson(doc, response);
     server.send(200, "application/json", response);
 }

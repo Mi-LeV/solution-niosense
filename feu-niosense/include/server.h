@@ -25,7 +25,7 @@ void handle_stop(void);
 void handle_vitesse1(void);
 void handle_vitesse2(void);
 void handle_distance(void);
-void handle_status(void);
+void handle_data(void);
 void handle_clear(void);
 void handle_download(void);
 void handle_404(void);
