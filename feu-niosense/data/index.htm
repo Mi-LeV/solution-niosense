@@ -185,28 +185,42 @@
             let startBtn = document.getElementById('start'); 
             let pauseBtn = document.getElementById('pause'); 
             let stopBtn = document.getElementById('stop'); 
+            let downloadBtn = document.getElementById('download');
+            let clearBtn = document.getElementById('clear');
 
             let sliderVit1 = document.getElementById('vit1');
             let sliderVit2 = document.getElementById('vit2');
             let inputDist = document.getElementById('dist');
             
-            var timer = false;
             let hour = 0; 
             let minute = 0; 
             let second = 0; 
 
+            var timer = false;
+            var timeout = false;
+            var alerte = false;
+
             sliderVit1.onchange = function(){
                 document.getElementById("vit1display").innerHTML = this.value;
-                setTimeout(sendVit1, 1000);
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendVit1, 1000);
+                }
             }
 
             sliderVit2.onchange = function(){
                 document.getElementById("vit2display").innerHTML = this.value;
-                setTimeout(sendVit2, 1000);
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendVit2, 1000);
+                }
             }
 
             inputDist.onchange = function(){
-                setTimeout(sendDistance, 1000);
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendDistance, 1000);
+                }
             }
 
             function sendVit1(){
@@ -223,6 +237,7 @@
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
+                timeout = false;
             }
 
             function sendVit2(){
@@ -239,6 +254,7 @@
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
+                timeout = false;
             }
 
             function sendDistance() {
@@ -255,6 +271,7 @@
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                 });
+                timeout = false;
             }
             
             startBtn.addEventListener('click', function () { 
@@ -280,17 +297,29 @@
                 document.getElementById('sec').innerHTML = "00"; 
                 sendStop();
             });
+
+            downloadBtn.addEventListener('click', function(){
+                fetch("/download")
+                .then(response => response.blob())
+                .then(content => {
+                    const a = document.createElement('a');
+                    a.setAttribute('download', 'banc_essai.log');
+                    const href = URL.createObjectURL(content);
+                    a.href = href;
+                    a.setAttribute('target', '_blank');
+                    a.click();
+                    URL.revokeObjectURL(href);
+                });
+            });
+
+            clearBtn.addEventListener('click', function(){
+                fetch("/clear", {method: "POST"})
+                .then(response => response.json());
+                document.getElementById('log_file').innerHTML = "";
+            });
             
             function sendStart() {
-                fetch("/start", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        start: 1
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
-                    }
-                })
+                fetch("/start", {method: "POST"})
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
@@ -298,15 +327,7 @@
             }
 
             function sendPause() {
-                fetch("/pause", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        pause: 1
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
-                    }
-                })
+                fetch("/pause", {method: "POST"})
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
@@ -314,15 +335,7 @@
             }
 
             function sendStop() {
-                fetch("/stop", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        stop: 1
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
-                    }
-                })
+                fetch("/stop", {method: "POST"})
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
@@ -353,6 +366,10 @@
                     document.getElementById('stat1').style.color = "red";
                     document.getElementById('stat2').innerHTML = "Déconnecté";
                     document.getElementById('stat2').style.color = "red";
+                    if(!alerte){
+                        alerte = true;
+                        alert("Connexion perdue avec le serveur");
+                    }
                 });
             }, 3000);
 

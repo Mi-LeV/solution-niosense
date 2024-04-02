@@ -14,7 +14,7 @@ void setup(){
   Serial.begin(115200);
   Serial.println("BOARD : MASTER");
 
-  init_comm_nrf24();
+  //init_comm_nrf24();
   init_server();
 }
 
@@ -27,7 +27,7 @@ void loop(){
 
 
 
-  send_and_receive_comm_nrf();
+  //send_and_receive_comm_nrf();
 
 
   //algo_light()

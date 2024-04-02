@@ -41,7 +41,9 @@ void init_server(void){
     server.on ("/vit1", HTTP_POST, handle_vitesse1);
     server.on ("/vit2", HTTP_POST, handle_vitesse2);
     server.on ("/dist", HTTP_POST, handle_distance);
+    server.on ("/clear", HTTP_POST, handle_clear);
     server.on ("/status", HTTP_GET, handle_status);
+    server.on ("/download", HTTP_GET, handle_download);
     server.onNotFound(handle_404);
 
     // Démarre le serveur web
@@ -52,74 +54,79 @@ void handle_webpage(void){
     server.send(200, "text/html", index_html);
 }
 
-// From : https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
+// Adapté de : https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
 void handle_start(void){
-    if (server.hasArg("plain")) {
-        // Démarrer le timer
-        TimerLib.setInterval_s(timer, 1);
+    // Démarrer le timer
+    TimerLib.setInterval_s(timer, 1);
 
-        JsonDocument doc;
-        String ligne = new_line(START);
-        char response[100];
+    JsonDocument doc;
+    String ligne = new_line(START);
+    char response[100];
 
-        doc["new_line"] = ligne;
-        serializeJson(doc, response);
-        server.send(200, "application/json", response);
+    doc["new_line"] = ligne;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 
-        btn_start = true;
-        btn_pause = false;
-        btn_stop = false;
-        Serial.print("Start : ");
-        Serial.println(btn_start);
-        appendFile(FICHIER_LOG, ligne.c_str());
-    }
+    btn_start = true;
+    btn_pause = false;
+    btn_stop = false;
+    Serial.print("Start : ");
+    Serial.println(btn_start);
+    appendFile(FICHIER_LOG, ligne.c_str());
 }
 
 void handle_pause(void){
-    if (server.hasArg("plain")) {
-        // Arrêter le timer
-        TimerLib.clearTimer();
+    // Arrêter le timer
+    TimerLib.clearTimer();
 
-        JsonDocument doc;
-        String ligne = new_line(PAUSE);
-        char response[100];
+    JsonDocument doc;
+    String ligne = new_line(PAUSE);
+    char response[100];
 
-        doc["new_line"] = ligne;
-        serializeJson(doc, response);
-        server.send(200, "application/json", response);
+    doc["new_line"] = ligne;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 
-        btn_pause = true;
-        btn_start = false;
-        btn_stop = false;
-        Serial.print("Pause : ");
-        Serial.println(btn_pause);
-        appendFile(FICHIER_LOG, ligne.c_str());
-    }
+    btn_pause = true;
+    btn_start = false;
+    btn_stop = false;
+    Serial.print("Pause : ");
+    Serial.println(btn_pause);
+    appendFile(FICHIER_LOG, ligne.c_str());
 }
 
 void handle_stop(void){
-    if (server.hasArg("plain")) {
-        JsonDocument doc;
-        String ligne = new_line(STOP);
-        char response[100];
+    JsonDocument doc;
+    String ligne = new_line(STOP);
+    char response[100];
 
-        doc["new_line"] = ligne;
-        serializeJson(doc, response);
-        server.send(200, "application/json", response);
+    doc["new_line"] = ligne;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 
-        // Arrêter le timer et remettre le compte à 0
-        TimerLib.clearTimer();
-        run_time.hours = 0;
-        run_time.minutes = 0;
-        run_time.seconds = 0;
+    // Arrêter le timer et remettre le compte à 0
+    TimerLib.clearTimer();
+    run_time.hours = 0;
+    run_time.minutes = 0;
+    run_time.seconds = 0;
 
-        btn_stop = true;
-        btn_start = false;
-        btn_pause = false;
-        Serial.print("Stop : ");
-        Serial.println(btn_stop);
-        appendFile(FICHIER_LOG, ligne.c_str());
-    }
+    btn_stop = true;
+    btn_start = false;
+    btn_pause = false;
+    Serial.print("Stop : ");
+    Serial.println(btn_stop);
+    appendFile(FICHIER_LOG, ligne.c_str());
+}
+
+void handle_clear(void){
+    writeFile(FICHIER_LOG, "");
+    Serial.println("Fichier log supprimé!");
+    server.send(200, "application/json", "{}");
+}
+
+void handle_download(void){
+    String fichier_log = ouvrir_fichier(FICHIER_LOG);
+    server.send(200, "application/blob", fichier_log);
 }
 
 void handle_vitesse1(void){
