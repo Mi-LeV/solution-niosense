@@ -9,6 +9,7 @@
 #define CSN_PIN 5
 
 #define NB_SLAVES 2
+#define DEBUG_MODE false
 #define RF_CHANNEL 0x76
 
 // payloads to be sent and received by the nrf

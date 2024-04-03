@@ -9,6 +9,7 @@
 #define CSN_PIN 5
 
 #define SLAVE_ID 1 // change this according to the ID of the slave
+#define DEBUG_MODE false
 #define NB_SLAVES 2
 #define RF_CHANNEL 0x76
 
