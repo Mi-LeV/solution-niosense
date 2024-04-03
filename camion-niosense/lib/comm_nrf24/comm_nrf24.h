@@ -3,10 +3,13 @@
 
 #include <SPI.h>
 #include "RF24.h"
+#include <nRF24L01.h>
 
 #define CE_PIN 15
 #define CSN_PIN 5
 
+#define SLAVE_ID 1 // change this according to the ID of the slave
+#define NB_SLAVES 2
 #define RF_CHANNEL 0x76
 
 // payloads to be sent and received by the nrf

@@ -17,7 +17,7 @@ void loop(){
 
 
   send_and_receive_comm_nrf();
-
+  delay(1000);
 
   //algo_light()
   //serve_webpage()

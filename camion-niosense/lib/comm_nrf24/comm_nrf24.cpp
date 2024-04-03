@@ -7,7 +7,7 @@ RF24 radio(CE_PIN, CSN_PIN);
 // choose the right node name corresponding to the slave id
 // Camion1 <-> Feu on node named Camion1
 // Camion2 <-> Feu on node named Camion2
-const uint8_t nodeAddress[8] = "Camion1" ;
+const uint8_t addresses[][8] = { "1Camion" , "2Camion"};
 
 SlavePayloadStruct slave_payload; // slave payload
 MasterPayloadStruct master_payload;
@@ -30,28 +30,31 @@ void init_comm_nrf24() {
     
   // set radio channel to use - ensure all slaves match this
   radio.setChannel(RF_CHANNEL);
-    
-  // set time between retries and max no. of retries
-  radio.setRetries(4, 10);
 
-  radio.openReadingPipe(1, nodeAddress);   
+  radio.openReadingPipe(SLAVE_ID, addresses[SLAVE_ID]);   
 
   // Acknowledgement packets have no payloads by default. We need to enable
   // this feature for all nodes (TX & RX) to use ACK payloads.
   radio.enableAckPayload();
 
   slave_payload.connection_status = false;
-  slave_payload.position = 0;
-  slave_payload.command_response = 0;
-  radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
+  if (SLAVE_ID){
+    slave_payload.position = 2 ;
+    slave_payload.command_response = 2 ;
+  }
+  else{
+    slave_payload.position = 0 ;
+    slave_payload.command_response = 0 ;
+  }
+  
 
   // start listening on radio
   radio.startListening();
   // initialize the master_payload to inoffensive values
-  
+  radio.writeAckPayload(SLAVE_ID, &slave_payload, sizeof(slave_payload));
 
   // radio.printDetails();       // (smaller) function that prints raw register values
-  // radio.printPrettyDetails(); // (larger) function that prints human readable data
+   radio.printPrettyDetails(); // (larger) function that prints human readable data
 }
 
 
@@ -82,10 +85,17 @@ void radioCheckAndReply(void)
           Serial.print("\tCommand response : ");
           Serial.println( slave_payload.command_response);
           */
-          
+          if (slave_payload.position % 2 == 0){
+            slave_payload.position ++ ;
+            slave_payload.command_response ++ ;
+          }
+          else{
+            slave_payload.position -- ;
+            slave_payload.command_response -- ;
+          }
 
           // update the node count after sending ack payload - provides continually changing data
-          radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
+          radio.writeAckPayload(SLAVE_ID, &slave_payload, sizeof(slave_payload));
           //long stop = millis();
           //Serial.print("\tResponse time : ");
           //Serial.println(stop-start, 0);
