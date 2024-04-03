@@ -31,7 +31,7 @@ void handle_download(void);
 void handle_404(void);
 void handle_client(void);
 void disconnect_server(void);
-void timer(void);
+void update_timer(void);
 String new_line(event_t event);
 
 #endif

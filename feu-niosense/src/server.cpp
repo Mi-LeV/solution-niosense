@@ -58,7 +58,7 @@ void handle_webpage(void){
 // Adapté de : https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
 void handle_start(void){
     // Démarrer le timer
-    TimerLib.setInterval_s(timer, 1);
+    TimerLib.setInterval_s(update_timer, 1);
 
     JsonDocument doc;
     String ligne = new_line(START);
@@ -225,12 +225,12 @@ void disconnect_server(void){
     server.stop();
 }
 
-void timer(void){
-    if(++run_time.seconds >= 60){
+void update_timer(void){
+    if(++run_time.seconds > 59){
         run_time.seconds = 0;
-        if(++run_time.minutes >= 60){
+        if(++run_time.minutes > 59){
             run_time.minutes = 0;
-            if(++run_time.hours >= 99){
+            if(++run_time.hours > 98){
                 run_time.hours = 0;
             }
         }
