@@ -20,7 +20,12 @@ uint8_t flag_init = false;
 uint8_t flag_go = false;
 uint8_t flag_debut = false;
 uint8_t flag_fin = false;
-uint64_t track_lenght = 0;
+long track_lenght = END_POINT;
+long distance_start = DIST_START;
+long distance_lost = DIST_LOST;
+long distance_pass_low = DIST_PASS_LOW;
+long distance_pass_high = DIST_PASS_HIGH;
+
 
 uint64_t cnt_printf = 0;
 
@@ -37,11 +42,11 @@ void setup(){
   init_comm_nrf24();
   init_motor();
 
-	stepper.moveTo(END_POINT);
+	//stepper.moveTo(track_lenght);
 
   Serial.println("Waiting for payload from master...");
 
-  stepper.setCurrentPosition(END_POINT + 5000); //5000 est un test, à changer
+  stepper.setCurrentPosition(track_lenght + 5000); //5000 est un test, à changer
   // printf("\033[2J");
 
 }
@@ -50,11 +55,11 @@ void loop()
 {
   // printf("\033[0;0H");
   /*stepper.setSpeed(800);
-  go_to_pos = END_POINT;
- // if(go_to_pos == END_POINT)
+  go_to_pos = track_lenght;
+ // if(go_to_pos == track_lenght)
   //  go_to_pos = START_POINT;
   //else
- //   go_to_pos = END_POINT;
+ //   go_to_pos = track_lenght;
 	stepper.moveTo(go_to_pos);
   while (stepper.currentPosition() != go_to_pos)
   {
@@ -75,16 +80,21 @@ void loop()
       flag_pressed = true;
       if(direction == DIR_AVANT)
       {
-        track_lenght = stepper.currentPosition() + 100; //a tester 
+        track_lenght = stepper.currentPosition();
+        stepper.setCurrentPosition(track_lenght);
         stepper.moveTo(START_POINT);
         direction = !direction;
+        distance_start = track_lenght/5;
+        distance_lost = distance_start*4;
+        distance_pass_low = ((track_lenght/2)-((track_lenght/10)/2));
+        distance_pass_high = ((track_lenght/2)+((track_lenght/10)/2));
         flag_init = true;
         flag_go = true;
       }
       else
       {
         stepper.setCurrentPosition(START_POINT);
-        stepper.moveTo(END_POINT+5000); //5000 est un test, à changer
+        stepper.moveTo(track_lenght+5000); //5000 est un test, à changer
         direction = !direction;
         flag_debut = true;
       }
@@ -98,10 +108,12 @@ void loop()
     {
       direction = DIR_ARRIERE;
       stepper.moveTo(START_POINT);
+      stepper.run();
     }
     else 
     {
-
+      direction = DIR_AVANT;
+      stepper.run();
     }
   }
 
@@ -112,14 +124,14 @@ void loop()
       flag_pressed = true;
       if(direction == DIR_AVANT)
       {
-        stepper.setCurrentPosition(END_POINT);
+        stepper.setCurrentPosition(track_lenght);
         stepper.moveTo(START_POINT);
         direction = !direction;
       }
       else
       {
         stepper.setCurrentPosition(START_POINT);
-        stepper.moveTo(END_POINT);
+        stepper.moveTo(track_lenght);
         direction = !direction;
       }
     //stepper.stop();
@@ -132,52 +144,52 @@ void loop()
     //{
       // printf("dist to go: %d\r\n", stepper.distanceToGo());
       //si la lumiere est rouge, qu'il va vert l'avant et qu'il ne n'a pas passe l'intersection
-      if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() < DIST_PASS_LOW))
+      if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() < distance_pass_low))
       {
-        stepper.moveTo(DIST_PASS_LOW);
+        stepper.moveTo(distance_pass_low);
         flag_red_light = true;
         stepper.run();
       }
       //si la lumiere est rouge, qu'il va vert l'arriere et qu'il ne n'a pas passe l'intersection
-      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() > DIST_PASS_HIGH))
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() > distance_pass_high))
       {
-        stepper.moveTo(DIST_PASS_HIGH);
+        stepper.moveTo(distance_pass_high);
         flag_red_light = true;
         stepper.run();
       }
-      else if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() > DIST_PASS_LOW))
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() > distance_pass_low))
       {
         if(!stepper.distanceToGo())
         {
           if(direction == DIR_AVANT)
           {
-              stepper.setCurrentPosition(END_POINT);
+              stepper.setCurrentPosition(track_lenght);
               stepper.moveTo(START_POINT);
               direction = !direction;
           }
           else
           {
             stepper.setCurrentPosition(START_POINT);
-            stepper.moveTo(END_POINT);
+            stepper.moveTo(track_lenght);
             direction = !direction;
           }
         }
         stepper.run();
       }
-      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() < DIST_PASS_HIGH))
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() < distance_pass_high))
       {
         if(!stepper.distanceToGo())
         {
           if(direction == DIR_AVANT)
           {
-              stepper.setCurrentPosition(END_POINT);
+              stepper.setCurrentPosition(track_lenght);
               stepper.moveTo(START_POINT);
               direction = !direction;
           }
           else
           {
             stepper.setCurrentPosition(START_POINT);
-            stepper.moveTo(END_POINT);
+            stepper.moveTo(track_lenght);
             direction = !direction;
           }
         }
@@ -191,12 +203,12 @@ void loop()
           {
             if(flag_red_light)
             {
-              stepper.moveTo(END_POINT);
+              stepper.moveTo(track_lenght);
               flag_red_light = false;
             }
             else
             {
-              stepper.setCurrentPosition(END_POINT);
+              stepper.setCurrentPosition(track_lenght);
               stepper.moveTo(START_POINT);
               direction = !direction;
             }
@@ -211,7 +223,7 @@ void loop()
             else
             {
               stepper.setCurrentPosition(START_POINT);
-              stepper.moveTo(END_POINT);
+              stepper.moveTo(track_lenght);
               direction = !direction;
             }
           }
@@ -238,6 +250,8 @@ void loop()
       printf("command: %d     \r\n\r\n", master_payload.command);
       printf("dir: %s\r\n",(direction == DIR_AVANT)?"AVANT":"ARRIERE");
       printf("pos: %d\r\n",stepper.currentPosition());
+      printf("track_lenght: %d\r\n",track_lenght);
+      printf("mode: %d\r\n",flag_init);
       //fflush(stdout);
     }
 }
