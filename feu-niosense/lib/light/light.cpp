@@ -71,6 +71,7 @@ void algo_light(volatile uint8_t* timer, uint8_t event)
     switch(sit_lum)
     {
         case green_n:
+            master_payload.traffic_light_state = GREEN;
             if(!flag_reset)
             {
                 flag_reset = true;
@@ -85,6 +86,7 @@ void algo_light(volatile uint8_t* timer, uint8_t event)
             }
         break;
         case yellow_n:
+            master_payload.traffic_light_state = YELLOW;
             if(!flag_reset)
             {
                 flag_reset = true;
@@ -107,6 +109,7 @@ void algo_light(volatile uint8_t* timer, uint8_t event)
             }
         break;
         case red_n:
+            master_payload.traffic_light_state = RED;
             if(!flag_reset)
             {
                 flag_reset = true;

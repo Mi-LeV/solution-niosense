@@ -5,6 +5,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 #include "Arduino.h"
+#include "comm_nrf24.h"
 
 #define LED_G1 21
 #define LED_Y1 17
@@ -24,9 +25,9 @@
 #define YELLOW  1
 #define RED     2
 
-#define TIME_GREEN   4
+#define TIME_GREEN   10
 #define TIME_YELLOW  2
-#define TIME_RED     4
+#define TIME_RED     TIME_GREEN
 
 #define MAX_SIZE_STACK 256
 

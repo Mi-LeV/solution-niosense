@@ -57,9 +57,9 @@ bool send_and_receive_comm_nrf(){
   bool send_state = true;
   //long start = millis();
 
-  master_payload.connection_status = !master_payload.connection_status;
-  master_payload.traffic_light_state  = ( master_payload.traffic_light_state + 1) % 3;
-  master_payload.command  = ( master_payload.command + 1) % 4;
+  //master_payload.connection_status = !master_payload.connection_status;
+  //master_payload.traffic_light_state  = ( master_payload.traffic_light_state + 1) % 3;
+  //master_payload.command  = ( master_payload.command + 1) % 4;
 
   for (uint8_t node = 0 ; node < NB_SLAVES ; node++){
     // setup a write pipe to current sensor node - must match the remote node listening pipe

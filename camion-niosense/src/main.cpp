@@ -98,9 +98,47 @@ void loop()
       flag_red_light = true;
       stepper.run();
     }
-    else 
+    else if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() > DIST_PASS_LOW))
     {
-      if(stepper.distanceToGo() == 0)
+      if(!stepper.distanceToGo())
+      {
+        if(direction == DIR_AVANT)
+        {
+            stepper.setCurrentPosition(END_POINT);
+            stepper.moveTo(START_POINT);
+            direction = !direction;
+        }
+        else
+        {
+          stepper.setCurrentPosition(START_POINT);
+          stepper.moveTo(END_POINT);
+          direction = !direction;
+        }
+      }
+      stepper.run();
+    }
+    else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() < DIST_PASS_HIGH))
+    {
+      if(!stepper.distanceToGo())
+      {
+        if(direction == DIR_AVANT)
+        {
+            stepper.setCurrentPosition(END_POINT);
+            stepper.moveTo(START_POINT);
+            direction = !direction;
+        }
+        else
+        {
+          stepper.setCurrentPosition(START_POINT);
+          stepper.moveTo(END_POINT);
+          direction = !direction;
+        }
+      }
+      stepper.run();
+    }
+    else if(master_payload.traffic_light_state != RED)
+    {
+      if(!stepper.distanceToGo())
       {
         if(direction == DIR_AVANT)
         {
