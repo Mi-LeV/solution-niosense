@@ -16,6 +16,11 @@ AccelStepper stepper(AccelStepper::DRIVER, GPIO_STEP, GPIO_DIR); // Defaults to 
 uint64_t go_to_pos = 0;
 uint8_t flag_pressed = false;
 uint8_t flag_red_light = false;
+uint8_t flag_init = false;
+uint8_t flag_go = false;
+uint8_t flag_debut = false;
+uint8_t flag_fin = false;
+uint64_t track_lenght = 0;
 
 uint64_t cnt_printf = 0;
 
@@ -35,6 +40,8 @@ void setup(){
 	stepper.moveTo(END_POINT);
 
   Serial.println("Waiting for payload from master...");
+
+  stepper.setCurrentPosition(END_POINT + 5000); //5000 est un test, à changer
   // printf("\033[2J");
 
 }
@@ -61,105 +68,92 @@ void loop()
   }
   stepper.runToNewPosition(START_POINT); // Cause an overshoot then back to 0
 */
-  if(!digitalRead(LIMIT_SWITCH_0) && !flag_pressed)
+  if(!flag_init)
   {
-    flag_pressed = true;
-    if(direction == DIR_AVANT)
+    if(!digitalRead(LIMIT_SWITCH_0) && !flag_pressed)  //si la limit switch est presse 
     {
-      stepper.setCurrentPosition(END_POINT);
+      flag_pressed = true;
+      if(direction == DIR_AVANT)
+      {
+        track_lenght = stepper.currentPosition() + 100; //a tester 
+        stepper.moveTo(START_POINT);
+        direction = !direction;
+        flag_init = true;
+        flag_go = true;
+      }
+      else
+      {
+        stepper.setCurrentPosition(START_POINT);
+        stepper.moveTo(END_POINT+5000); //5000 est un test, à changer
+        direction = !direction;
+        flag_debut = true;
+      }
+    }
+    else if(digitalRead(LIMIT_SWITCH_0) && flag_pressed)//si la limit switch n'est plus presse
+    {
+      flag_pressed = false;
+    }
+
+    else if(!flag_debut)
+    {
+      direction = DIR_ARRIERE;
       stepper.moveTo(START_POINT);
-      direction = !direction;
     }
-    else
+    else 
     {
-      stepper.setCurrentPosition(START_POINT);
-      stepper.moveTo(END_POINT);
-      direction = !direction;
+
     }
-   //stepper.stop();
   }
-  else if(digitalRead(LIMIT_SWITCH_0) && flag_pressed)
+
+  else if(flag_go)
   {
-    flag_pressed = false;
-  }
-  //else
-  //{
-    // printf("dist to go: %d\r\n", stepper.distanceToGo());
-    
-    if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() < DIST_PASS_LOW))
+    if(!digitalRead(LIMIT_SWITCH_0) && !flag_pressed)
     {
-      stepper.moveTo(DIST_PASS_LOW);
-      flag_red_light = true;
-      stepper.run();
-    }
-    else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() > DIST_PASS_HIGH))
-    {
-      stepper.moveTo(DIST_PASS_HIGH);
-      flag_red_light = true;
-      stepper.run();
-    }
-    else if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() > DIST_PASS_LOW))
-    {
-      if(!stepper.distanceToGo())
+      flag_pressed = true;
+      if(direction == DIR_AVANT)
       {
-        if(direction == DIR_AVANT)
-        {
-            stepper.setCurrentPosition(END_POINT);
-            stepper.moveTo(START_POINT);
-            direction = !direction;
-        }
-        else
-        {
-          stepper.setCurrentPosition(START_POINT);
-          stepper.moveTo(END_POINT);
-          direction = !direction;
-        }
+        stepper.setCurrentPosition(END_POINT);
+        stepper.moveTo(START_POINT);
+        direction = !direction;
       }
-      stepper.run();
-    }
-    else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() < DIST_PASS_HIGH))
-    {
-      if(!stepper.distanceToGo())
+      else
       {
-        if(direction == DIR_AVANT)
-        {
-            stepper.setCurrentPosition(END_POINT);
-            stepper.moveTo(START_POINT);
-            direction = !direction;
-        }
-        else
-        {
-          stepper.setCurrentPosition(START_POINT);
-          stepper.moveTo(END_POINT);
-          direction = !direction;
-        }
+        stepper.setCurrentPosition(START_POINT);
+        stepper.moveTo(END_POINT);
+        direction = !direction;
       }
-      stepper.run();
+    //stepper.stop();
     }
-    else if(master_payload.traffic_light_state != RED)
+    else if(digitalRead(LIMIT_SWITCH_0) && flag_pressed)
     {
-      if(!stepper.distanceToGo())
+      flag_pressed = false;
+    }
+    //else
+    //{
+      // printf("dist to go: %d\r\n", stepper.distanceToGo());
+      //si la lumiere est rouge, qu'il va vert l'avant et qu'il ne n'a pas passe l'intersection
+      if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() < DIST_PASS_LOW))
       {
-        if(direction == DIR_AVANT)
+        stepper.moveTo(DIST_PASS_LOW);
+        flag_red_light = true;
+        stepper.run();
+      }
+      //si la lumiere est rouge, qu'il va vert l'arriere et qu'il ne n'a pas passe l'intersection
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() > DIST_PASS_HIGH))
+      {
+        stepper.moveTo(DIST_PASS_HIGH);
+        flag_red_light = true;
+        stepper.run();
+      }
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_AVANT) && (stepper.currentPosition() > DIST_PASS_LOW))
+      {
+        if(!stepper.distanceToGo())
         {
-          if(flag_red_light)
+          if(direction == DIR_AVANT)
           {
-            stepper.moveTo(END_POINT);
-            flag_red_light = false;
-          }
-          else
-          {
-            stepper.setCurrentPosition(END_POINT);
-            stepper.moveTo(START_POINT);
-            direction = !direction;
-          }
-        }
-        else
-        {
-          if(flag_red_light)
-          {
-            stepper.moveTo(START_POINT);
-            flag_red_light = false;
+              stepper.setCurrentPosition(END_POINT);
+              stepper.moveTo(START_POINT);
+              direction = !direction;
           }
           else
           {
@@ -168,29 +162,82 @@ void loop()
             direction = !direction;
           }
         }
+        stepper.run();
       }
-      stepper.setMaxSpeed(MAX_SPEED);
-      stepper.run();
-    }
-    //else
-    //{
-     // stepper.setMaxSpeed(0);
+      else if((master_payload.traffic_light_state == RED) && (direction == DIR_ARRIERE) && (stepper.currentPosition() < DIST_PASS_HIGH))
+      {
+        if(!stepper.distanceToGo())
+        {
+          if(direction == DIR_AVANT)
+          {
+              stepper.setCurrentPosition(END_POINT);
+              stepper.moveTo(START_POINT);
+              direction = !direction;
+          }
+          else
+          {
+            stepper.setCurrentPosition(START_POINT);
+            stepper.moveTo(END_POINT);
+            direction = !direction;
+          }
+        }
+        stepper.run();
+      }
+      else if(master_payload.traffic_light_state != RED)
+      {
+        if(!stepper.distanceToGo())
+        {
+          if(direction == DIR_AVANT)
+          {
+            if(flag_red_light)
+            {
+              stepper.moveTo(END_POINT);
+              flag_red_light = false;
+            }
+            else
+            {
+              stepper.setCurrentPosition(END_POINT);
+              stepper.moveTo(START_POINT);
+              direction = !direction;
+            }
+          }
+          else
+          {
+            if(flag_red_light)
+            {
+              stepper.moveTo(START_POINT);
+              flag_red_light = false;
+            }
+            else
+            {
+              stepper.setCurrentPosition(START_POINT);
+              stepper.moveTo(END_POINT);
+              direction = !direction;
+            }
+          }
+        }
+        stepper.setMaxSpeed(MAX_SPEED);
+        stepper.run();
+      }
+      //else
+      //{
+      // stepper.setMaxSpeed(0);
+      //}
     //}
-  //}
-  digitalWrite(GPIO_BLUE_LED, flag_pressed);
+    digitalWrite(GPIO_BLUE_LED, flag_pressed);
+  }
+    radioCheckAndReply();
+    // printf("\033[2J");
+    cnt_printf++;
 
-  radioCheckAndReply();
-  // printf("\033[2J");
-   cnt_printf++;
-
-   if(cnt_printf >= 3000)
-   {
-     cnt_printf = 0;
-     printf("status : %d     \r\n", master_payload.connection_status);
-     printf("light  : %d     \r\n", master_payload.traffic_light_state);
-     printf("command: %d     \r\n\r\n", master_payload.command);
-     printf("dir: %s\r\n",(direction == DIR_AVANT)?"AVANT":"ARRIERE");
-     printf("pos: %d\r\n",stepper.currentPosition());
-     //fflush(stdout);
-   }
+    if(cnt_printf >= 3000)
+    {
+      cnt_printf = 0;
+      printf("status : %d     \r\n", master_payload.connection_status);
+      printf("light  : %d     \r\n", master_payload.traffic_light_state);
+      printf("command: %d     \r\n\r\n", master_payload.command);
+      printf("dir: %s\r\n",(direction == DIR_AVANT)?"AVANT":"ARRIERE");
+      printf("pos: %d\r\n",stepper.currentPosition());
+      //fflush(stdout);
+    }
 }
