@@ -4,6 +4,7 @@
 #include "motor.h"
 
 #define LIMIT_SWITCH_0 14
+#define LIMIT_SWITCH_1 13
 #define GPIO_BLUE_LED GPIO_NUM_2
 
 #define GREEN   0
@@ -34,6 +35,7 @@ void setup(){
   Serial.println("BOARD : CAMION1");
   
   pinMode(LIMIT_SWITCH_0, INPUT);
+  pinMode(LIMIT_SWITCH_1, INPUT);
   pinMode(GPIO_BLUE_LED, OUTPUT);
 
   stepper.setMaxSpeed(MAX_SPEED);
@@ -75,12 +77,12 @@ void loop()
 */
   if(!flag_init)
   {
-    if(!digitalRead(LIMIT_SWITCH_0) && !flag_pressed)  //si la limit switch est presse 
+    if(((!digitalRead(LIMIT_SWITCH_0))||(!digitalRead(LIMIT_SWITCH_1))) && !flag_pressed)  //si la limit switch est presse 
     {
       flag_pressed = true;
       if(direction == DIR_AVANT)
       {
-        track_lenght = stepper.currentPosition();
+        track_lenght = stepper.currentPosition() + 100;
         stepper.setCurrentPosition(track_lenght);
         stepper.moveTo(START_POINT);
         direction = !direction;
@@ -99,7 +101,7 @@ void loop()
         flag_debut = true;
       }
     }
-    else if(digitalRead(LIMIT_SWITCH_0) && flag_pressed)//si la limit switch n'est plus presse
+    else if(digitalRead(LIMIT_SWITCH_0) && digitalRead(LIMIT_SWITCH_1) && flag_pressed)//si la limit switch n'est plus presse
     {
       flag_pressed = false;
     }
@@ -119,7 +121,7 @@ void loop()
 
   else if(flag_go)
   {
-    if(!digitalRead(LIMIT_SWITCH_0) && !flag_pressed)
+    if(((!digitalRead(LIMIT_SWITCH_0))||(!digitalRead(LIMIT_SWITCH_1)))&& !flag_pressed)
     {
       flag_pressed = true;
       if(direction == DIR_AVANT)
@@ -136,7 +138,7 @@ void loop()
       }
     //stepper.stop();
     }
-    else if(digitalRead(LIMIT_SWITCH_0) && flag_pressed)
+    else if(digitalRead(LIMIT_SWITCH_0) && digitalRead(LIMIT_SWITCH_1) && flag_pressed)
     {
       flag_pressed = false;
     }
