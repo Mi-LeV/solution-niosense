@@ -8,9 +8,7 @@ IPAddress apIP(192, 168, 1, 1);
 /*** VARIABLES ***/
 String index_html = "";
 JsonDocument jsonDocument;
-bool btn_start = false;
-bool btn_pause = false;
-bool btn_stop = true;
+uint8_t etat_btn = STOP;
 int vitesse1_desire = 0, vitesse2_desire = 0, distance_desire = 10;
 
 // Déclarés dans le module NRF...
@@ -43,6 +41,7 @@ void init_server(void){
     server.on ("/vit2", HTTP_POST, handle_vitesse2);
     server.on ("/dist", HTTP_POST, handle_distance);
     server.on ("/clear", HTTP_POST, handle_clear);
+    server.on ("/time", HTTP_GET, handle_time);
     server.on ("/data", HTTP_GET, handle_data);
     server.on ("/download", HTTP_GET, handle_download);
     server.onNotFound(handle_404);
@@ -68,11 +67,8 @@ void handle_start(void){
     serializeJson(doc, response);
     server.send(200, "application/json", response);
 
-    btn_start = true;
-    btn_pause = false;
-    btn_stop = false;
-    Serial.print("Start : ");
-    Serial.println(btn_start);
+    etat_btn = START;
+    Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
@@ -88,11 +84,8 @@ void handle_pause(void){
     serializeJson(doc, response);
     server.send(200, "application/json", response);
 
-    btn_pause = true;
-    btn_start = false;
-    btn_stop = false;
-    Serial.print("Pause : ");
-    Serial.println(btn_pause);
+    etat_btn = PAUSE;
+    Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
@@ -111,11 +104,8 @@ void handle_stop(void){
     run_time.minutes = 0;
     run_time.seconds = 0;
 
-    btn_stop = true;
-    btn_start = false;
-    btn_pause = false;
-    Serial.print("Stop : ");
-    Serial.println(btn_stop);
+    etat_btn = STOP;
+    Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
@@ -128,6 +118,18 @@ void handle_clear(void){
 void handle_download(void){
     String fichier_log = ouvrir_fichier(FICHIER_LOG);
     server.send(200, "application/blob", fichier_log);
+}
+
+void handle_time(void){
+    JsonDocument doc;
+    char response[100];
+
+    doc["hours"] = run_time.hours;
+    doc["minutes"] = run_time.minutes;
+    doc["seconds"] = run_time.seconds;
+    doc["state"] = etat_btn;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 }
 
 void handle_vitesse1(void){
@@ -230,7 +232,7 @@ void update_timer(void){
         run_time.seconds = 0;
         if(++run_time.minutes > 59){
             run_time.minutes = 0;
-            if(++run_time.hours > 98){
+            if(++run_time.hours > 99){
                 run_time.hours = 0;
             }
         }
@@ -242,11 +244,11 @@ void update_timer(void){
 String new_line(event_t event){
     String str;
     char temps[10];
-    sprintf(temps, "%02d:%02d:%02d\t", run_time.hours, run_time.minutes, run_time.seconds);
+    sprintf(temps, "%02d:%02d:%02d    ", run_time.hours, run_time.minutes, run_time.seconds);
     str = temps;
     switch(event){
         case START:
-            if(btn_pause)
+            if(etat_btn == PAUSE)
                 str += "Reprise du test\n";
             else
                 str += "Début du test\n";

@@ -183,7 +183,7 @@
 
         <h2 align="center">Log File</h2>
 
-        <div class="scrollbox" id="log_file"></div>
+        <div class="scrollbox" id="log_file" style="padding: 10px"></div>
         <div class="container" style="background-color: inherit">
             <button class="btn" id="download">Télécharger</button>
             <button class="btn" id="clear">Clear</button>
@@ -204,9 +204,25 @@
             let minute = 0; 
             let second = 0; 
 
-            var timer = false;
+            var state = 'stop';
             var timeout = false;
             var alerte = false;
+
+            function requestTime(){
+                fetch("/time")
+                .then(response => response.json())
+                .then(data => {
+                    hour = data.hours;
+                    minute = data.minutes;
+                    second = data.seconds;
+                    formatTime();
+                    if(data.state == "0"){
+                        state = 'start';
+                        setTimeout(stopWatch, 1000);
+                    }
+                })
+            }
+            window.onload = requestTime;
 
             sliderVit1.onchange = function(){
                 document.getElementById("vit1display").innerHTML = this.value;
@@ -244,6 +260,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
                 timeout = false;
             }
@@ -261,6 +278,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
                 timeout = false;
             }
@@ -278,32 +296,37 @@
                 .then((response) => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
                 timeout = false;
             }
             
             startBtn.addEventListener('click', function () { 
-                if(!timer){
-                    timer = true;
+                if(state != 'start'){
+                    state = 'start';
                     setTimeout(stopWatch, 1000);
                     sendStart();
                 }
             });
             
             pauseBtn.addEventListener('click', function () { 
-                timer = false;
-                sendPause(); 
+                if(state != 'pause'){
+                    state = 'pause';
+                    sendPause(); 
+                }
             });
 
-            stopBtn.addEventListener('click', function () { 
-                timer = false; 
-                hour = 0; 
-                minute = 0; 
-                second = 0; 
-                document.getElementById('hr').innerHTML = "00"; 
-                document.getElementById('min').innerHTML = "00"; 
-                document.getElementById('sec').innerHTML = "00"; 
-                sendStop();
+            stopBtn.addEventListener('click', function () {
+                if(state != 'stop'){
+                    state = 'stop';
+                    hour = 0; 
+                    minute = 0; 
+                    second = 0; 
+                    document.getElementById('hr').innerHTML = "00"; 
+                    document.getElementById('min').innerHTML = "00"; 
+                    document.getElementById('sec').innerHTML = "00"; 
+                    sendStop();
+                }
             });
 
             downloadBtn.addEventListener('click', function(){
@@ -331,6 +354,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
             }
 
@@ -339,6 +363,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
             }
 
@@ -347,6 +372,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
                 });
             }
 
@@ -354,6 +380,7 @@
                 fetch("/data")
                 .then(response => response.json())
                 .then(data => {
+                    alerte = false;
                     if(data.status1 == "1"){
                         document.getElementById('stat1').innerHTML = "Connecté";
                         document.getElementById('stat1').style.color = "#08f500";
@@ -384,7 +411,7 @@
             }, 3000);
 
             function stopWatch() { 
-                if (timer) { 
+                if (state == 'start') {
                     setTimeout(stopWatch, 1000);
                     
                     second++; 
@@ -398,27 +425,30 @@
                         minute = 0; 
                         second = 0; 
                     } 
-            
-                    let hrString = hour; 
-                    let minString = minute; 
-                    let secString = second; 
-            
-                    if (hour < 10) { 
-                        hrString = "0" + hrString; 
-                    } 
-            
-                    if (minute < 10) { 
-                        minString = "0" + minString; 
-                    } 
-            
-                    if (second < 10) { 
-                        secString = "0" + secString; 
-                    } 
-            
-                    document.getElementById('hr').innerHTML = hrString; 
-                    document.getElementById('min').innerHTML = minString; 
-                    document.getElementById('sec').innerHTML = secString;  
+                    formatTime();
                 } 
+            }
+
+            function formatTime(){
+                let hrString = hour;
+                let minString = minute;
+                let secString = second;
+        
+                if (hour < 10) {
+                    hrString = "0" + hrString;
+                }
+        
+                if (minute < 10) {
+                    minString = "0" + minString;
+                }
+        
+                if (second < 10) {
+                    secString = "0" + secString;
+                }
+        
+                document.getElementById('hr').innerHTML = hrString;
+                document.getElementById('min').innerHTML = minString;
+                document.getElementById('sec').innerHTML = secString;
             }
         </script>
     </body>

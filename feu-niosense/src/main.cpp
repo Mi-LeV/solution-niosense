@@ -14,7 +14,7 @@ void IRAM_ATTR timer_isr()
 }
 
 // Boutons et paramètres de l'interface (déclarés dans le module server)
-extern bool btn_start, btn_pause, btn_stop;
+extern uint8_t etat_btn;
 extern int vitesse1_desire, vitesse2_desire, distance_desire;
 
 /*** TEMPORAIRE : statut de connexion des deux camions ***/
@@ -52,10 +52,6 @@ void loop(){
   //create_master_payload() ( status led, command)
   algo_light(&timer_instance, 0);
   send_and_receive_comm_nrf();
-
-
-  //send_and_receive_comm_nrf();
-
 
   //algo_light()
   handle_client();
