@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+    <title>Banc d'essai</title>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                background-color: black;
+                color: white;
+                margin-left: 40px;
+                margin-right: 40px;
+            }
+
+            h1{
+                background-color: rgb(90, 90, 90);
+                border: 2px solid white;
+            }
+
+            table{
+                text-align: center;
+                width: 75%;
+                table-layout: fixed;
+                border-collapse: collapse;
+                margin: auto;
+            }
+
+            table td{
+                background-color: rgb(90, 90, 90); 
+			    border: 2px solid white;
+                font-size: 20px;
+                padding: 5px;
+            }
+
+            table td.hide{
+                background-color: inherit; 
+			    border: none;
+            }
+
+            div.distance{
+                width: 200px;
+                padding: 10px;
+                text-align: center;
+                font-size: 20px;
+                border: 2px solid white;
+                background-color: rgb(90, 90, 90);
+                margin: auto;
+            }
+
+            div.scrollbox{
+                overflow: auto;
+                width: 75%;
+                height: 200px;
+                border: 2px solid white;
+                background-color: rgb(90, 90, 90);
+                margin: auto;
+            }
+
+            .container { 
+                display: flex; 
+                justify-content: center; 
+                align-items: center;
+                margin: auto;
+                padding: 10px;
+                background-color: rgb(90, 90, 90); 
+            } 
+
+            .digit { 
+                font-size: 24px; 
+                color: #fff; 
+            } 
+            
+            .txt { 
+                font-size: 24px; 
+                color: #fffcd6; 
+            } 
+            
+            #buttons { 
+                margin-right: 20px; 
+            } 
+            
+            .btn { 
+                margin: 0px 10px; 
+                border-top-right-radius: 10px; 
+                border-bottom-left-radius: 10px; 
+                border-bottom-right-radius: 4px; 
+                border-top-left-radius: 4px; 
+                cursor: pointer; 
+                font-size: 16px; 
+                transition: 0.5s; 
+                color: white; 
+                font-weight: 500; 
+            } 
+            
+            #start { 
+                width: 60px;
+                background-color: #119d01; 
+            } 
+  
+            #pause { 
+                width: 60px;
+                background-color: #b4ba04; 
+            } 
+            
+            #stop { 
+                width: 60px;
+                background-color: #c91400; 
+            }
+
+            #download { 
+                width: 100px;
+                background-color: rgb(90, 90, 90); 
+            }
+
+            #clear { 
+                width: 60px;
+                background-color: rgb(90, 90, 90); 
+            }
+        </style>
+    </head>
+    <body>
+        <h1 align="center">Interface du banc d'essai</h1>
+
+        <div class="container" style="width: 50%">
+             
+            <div id="buttons"> 
+                <button class="btn" id="start"> 
+                    Start</button> 
+                <button class="btn" id="pause"> 
+                    Pause</button> 
+                <button class="btn" id="stop"> 
+                    Stop</button> 
+            </div>
+            <div id="time"> 
+                <span class="digit" id="hr"> 
+                    00</span> 
+                <span class="txt">Hr</span> 
+                <span class="digit" id="min"> 
+                    00</span> 
+                <span class="txt">Min</span> 
+                <span class="digit" id="sec"> 
+                    00</span> 
+                <span class="txt">Sec</span> 
+            </div> 
+        </div>
+
+        </br>
+        <table align="center">
+            <tr>
+                <td class="hide"></td>
+                <td>Status</td>
+                <td>Vitesse (%)</td>
+                <td>Nb de déconnexions</td>
+            </tr>
+            <tr>
+                <td>Camion 1</td>
+                <td style="color: red" id="stat1">Déconnecté</td>
+                <td>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit1">
+                        <div style="display: inline" id="vit1display">50</div>
+                    </div></td>
+                </td>
+                <td id="nb_decon_1">0</td>
+            </tr>
+            <tr>
+                <td>Camion 2</td>
+                <td style="color: red" id="stat2">Déconnecté</td>
+                <td>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="vit2">
+                        <div style="display: inline" id="vit2display">50</div>
+                    </div></td>
+                </td>
+                <td id="nb_decon_2">0</td>
+            </tr>
+        </table>
+        </br>
+
+        <div class="distance">
+            <label for="dist">Distance (cm)</label>
+            <input style="width: 40px; font-size: 20px" type="number" id="dist" name="distance" value="10" min="0" max="30">
+        </div>
+
+        <h2 align="center">Log File</h2>
+
+        <div class="scrollbox" id="log_file" style="padding: 10px"></div>
+        <div class="container" style="background-color: inherit">
+            <button class="btn" id="download">Télécharger</button>
+            <button class="btn" id="clear">Clear</button>
+        </div>
+
+        <script>
+            let startBtn = document.getElementById('start'); 
+            let pauseBtn = document.getElementById('pause'); 
+            let stopBtn = document.getElementById('stop'); 
+            let downloadBtn = document.getElementById('download');
+            let clearBtn = document.getElementById('clear');
+
+            let sliderVit1 = document.getElementById('vit1');
+            let sliderVit2 = document.getElementById('vit2');
+            let inputDist = document.getElementById('dist');
+            
+            let hour = 0; 
+            let minute = 0; 
+            let second = 0; 
+
+            var state = 'stop';
+            var timeout = false;
+            var alerte = false;
+
+            function requestTime(){
+                fetch("/time")
+                .then(response => response.json())
+                .then(data => {
+                    hour = data.hours;
+                    minute = data.minutes;
+                    second = data.seconds;
+                    formatTime();
+                    if(data.state == "0"){
+                        state = 'start';
+                        setTimeout(stopWatch, 1000);
+                    }
+                })
+            }
+            window.onload = requestTime;
+
+            sliderVit1.onchange = function(){
+                document.getElementById("vit1display").innerHTML = this.value;
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendVit1, 1000);
+                }
+            }
+
+            sliderVit2.onchange = function(){
+                document.getElementById("vit2display").innerHTML = this.value;
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendVit2, 1000);
+                }
+            }
+
+            inputDist.onchange = function(){
+                if(!timeout){
+                    timeout = true;
+                    setTimeout(sendDistance, 1000);
+                }
+            }
+
+            function sendVit1(){
+                fetch("/vit1", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit1: document.getElementById('vit1').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+                timeout = false;
+            }
+
+            function sendVit2(){
+                fetch("/vit2", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        vit2: document.getElementById('vit2').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+                timeout = false;
+            }
+
+            function sendDistance() {
+                fetch("/dist", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        dist: document.getElementById('dist').value
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then((response) => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+                timeout = false;
+            }
+            
+            startBtn.addEventListener('click', function () { 
+                if(state != 'start'){
+                    state = 'start';
+                    setTimeout(stopWatch, 1000);
+                    sendStart();
+                }
+            });
+            
+            pauseBtn.addEventListener('click', function () { 
+                if(state != 'pause'){
+                    state = 'pause';
+                    sendPause(); 
+                }
+            });
+
+            stopBtn.addEventListener('click', function () {
+                if(state != 'stop'){
+                    state = 'stop';
+                    hour = 0; 
+                    minute = 0; 
+                    second = 0; 
+                    document.getElementById('hr').innerHTML = "00"; 
+                    document.getElementById('min').innerHTML = "00"; 
+                    document.getElementById('sec').innerHTML = "00"; 
+                    sendStop();
+                }
+            });
+
+            downloadBtn.addEventListener('click', function(){
+                fetch("/download")
+                .then(response => response.blob())
+                .then(content => {
+                    const a = document.createElement('a');
+                    a.setAttribute('download', 'banc_essai.log');
+                    const href = URL.createObjectURL(content);
+                    a.href = href;
+                    a.setAttribute('target', '_blank');
+                    a.click();
+                    URL.revokeObjectURL(href);
+                });
+            });
+
+            clearBtn.addEventListener('click', function(){
+                fetch("/clear", {method: "POST"})
+                .then(response => response.json());
+                document.getElementById('log_file').innerHTML = "";
+            });
+            
+            function sendStart() {
+                fetch("/start", {method: "POST"})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+            }
+
+            function sendPause() {
+                fetch("/pause", {method: "POST"})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+            }
+
+            function sendStop() {
+                fetch("/stop", {method: "POST"})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
+                    document.getElementById('log_file').scrollBy(0,50);
+                });
+            }
+
+            setInterval(function(){
+                fetch("/data")
+                .then(response => response.json())
+                .then(data => {
+                    alerte = false;
+                    if(data.status1 == "1"){
+                        document.getElementById('stat1').innerHTML = "Connecté";
+                        document.getElementById('stat1').style.color = "#08f500";
+                    }else{
+                        document.getElementById('stat1').innerHTML = "Déconnecté";
+                        document.getElementById('stat1').style.color = "red";
+                    }
+                    if(data.status2 == "1"){
+                        document.getElementById('stat2').innerHTML = "Connecté";
+                        document.getElementById('stat2').style.color = "#08f500";
+                    }else{
+                        document.getElementById('stat2').innerHTML = "Déconnecté";
+                        document.getElementById('stat2').style.color = "red";
+                    }
+                    document.getElementById('nb_decon_1').innerHTML = data.nb_decon_1;
+                    document.getElementById('nb_decon_2').innerHTML = data.nb_decon_2;
+                })
+                .catch(err => {
+                    document.getElementById('stat1').innerHTML = "Déconnecté";
+                    document.getElementById('stat1').style.color = "red";
+                    document.getElementById('stat2').innerHTML = "Déconnecté";
+                    document.getElementById('stat2').style.color = "red";
+                    if(!alerte){
+                        alerte = true;
+                        alert("Connexion perdue avec le serveur");
+                    }
+                });
+            }, 3000);
+
+            function stopWatch() { 
+                if (state == 'start') {
+                    setTimeout(stopWatch, 1000);
+                    
+                    second++; 
+                    if (second == 60) { 
+                        minute++; 
+                        second = 0; 
+                    } 
+            
+                    if (minute == 60) { 
+                        hour++; 
+                        minute = 0; 
+                        second = 0; 
+                    } 
+                    formatTime();
+                } 
+            }
+
+            function formatTime(){
+                let hrString = hour;
+                let minString = minute;
+                let secString = second;
+        
+                if (hour < 10) {
+                    hrString = "0" + hrString;
+                }
+        
+                if (minute < 10) {
+                    minString = "0" + minString;
+                }
+        
+                if (second < 10) {
+                    secString = "0" + secString;
+                }
+        
+                document.getElementById('hr').innerHTML = hrString;
+                document.getElementById('min').innerHTML = minString;
+                document.getElementById('sec').innerHTML = secString;
+            }
+        </script>
+    </body>
+</html>
