@@ -3,15 +3,19 @@
 
 #include <SPI.h>
 #include "RF24.h"
+#include <nRF24L01.h>
 
 #define CE_PIN 15
 #define CSN_PIN 5
 
+#define SLAVE_ID 0 // change this according to the ID of the slave
+#define DEBUG_MODE false
+#define NB_SLAVES 2
 #define RF_CHANNEL 0x76
 
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
-  bool connection_status; // 0 : No conn, 1 : connection
+  bool connection_status [NB_SLAVES]; // 0 : No conn, 1 : connection
   uint8_t traffic_light_state; // 0 : red, 1 : yellow, 2 : green
   uint8_t command; // 0 : idle, 1 : initialize, 2 : go, 3 : stop
 };

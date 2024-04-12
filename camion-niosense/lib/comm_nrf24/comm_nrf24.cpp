@@ -4,13 +4,16 @@
 RF24 radio(CE_PIN, CSN_PIN);
 //VSPI is default, SPI1 is HSPI
 
-// choose the right node name corresponding to the slave id
-// Camion1 <-> Feu on node named Camion1
-// Camion2 <-> Feu on node named Camion2
-const uint8_t nodeAddress[8] = "Camion1" ;
+//defining the two nodes names
+// each half-duplex comm will be happening on their respective node
+// Camion1 <-> Feu on node named 1Camion
+// Camion2 <-> Feu on node named 2Camion
+const uint8_t addresses[][8] = { "1Camion" , "2Camion"};
 
 SlavePayloadStruct slave_payload; // slave payload
 MasterPayloadStruct master_payload;
+
+long start,stop;
 
 // Init comm NRF24
 void init_comm_nrf24() {
@@ -30,28 +33,40 @@ void init_comm_nrf24() {
     
   // set radio channel to use - ensure all slaves match this
   radio.setChannel(RF_CHANNEL);
-    
-  // set time between retries and max no. of retries
-  radio.setRetries(4, 10);
 
-  radio.openReadingPipe(1, nodeAddress);   
+  radio.openReadingPipe(SLAVE_ID, addresses[SLAVE_ID]);   
 
   // Acknowledgement packets have no payloads by default. We need to enable
   // this feature for all nodes (TX & RX) to use ACK payloads.
   radio.enableAckPayload();
 
-  slave_payload.connection_status = false;
-  slave_payload.position = 0;
-  slave_payload.command_response = 0;
-  radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
+  if(DEBUG_MODE){
+    slave_payload.connection_status = false;
+    if (SLAVE_ID){
+      slave_payload.position = 2 ;
+      slave_payload.command_response = 2 ;
+    }
+    else{
+      slave_payload.position = 0 ;
+      slave_payload.command_response = 0 ;
+    }
+  }
+  else{
+    slave_payload.connection_status = false;
+    slave_payload.position = 0 ;
+    slave_payload.command_response = 0 ;
+  }
+  
+  
 
   // start listening on radio
   radio.startListening();
   // initialize the master_payload to inoffensive values
-  
-
-  // radio.printDetails();       // (smaller) function that prints raw register values
-  // radio.printPrettyDetails(); // (larger) function that prints human readable data
+  radio.writeAckPayload(SLAVE_ID, &slave_payload, sizeof(slave_payload));
+  if (DEBUG_MODE){
+    radio.printPrettyDetails(); // (larger) function that prints human readable data
+  }
+   
 }
 
 
@@ -61,37 +76,53 @@ void radioCheckAndReply(void)
 {
     // check for radio message and send sensor data using auto-ack
     if ( radio.available() ) {
-          //long start = millis();
+          if (DEBUG_MODE){
+            long start = millis();
+          }
           radio.read( &master_payload, sizeof(master_payload) );
 
-          // slave_payload.connection_status = !slave_payload.connection_status;
-          // slave_payload.position ++;
-          // slave_payload.command_response = ( slave_payload.command_response + 1) % 3;
-
-          /*
-          Serial.println( "RECEIVED MASTER PAYLOAD : ");
-          Serial.print("\tConn status : ");
-          Serial.println( master_payload.connection_status);
-          Serial.print("\tLight state : ");
-          Serial.println( master_payload.traffic_light_state);
-          Serial.print("\tCommand : ");
-          Serial.println( master_payload.command);
-
-
-          Serial.println( "SENDING SLAVE PAYLOAD : ");
-          Serial.print("\tConn status : ");
-          Serial.println( slave_payload.connection_status);
-          Serial.print("\tPosition : ");
-          Serial.println( slave_payload.position);
-          Serial.print("\tCommand response : ");
-          Serial.println( slave_payload.command_response);
-          */
           
+          if (DEBUG_MODE){
+
+            Serial.println( "RECEIVED MASTER PAYLOAD : ");
+            Serial.print("\tConn status : ");
+            for (int i = 0 ; i < NB_SLAVES ; i++){
+              Serial.print( master_payload.connection_status[0]);
+              Serial.print(" , ");
+            }
+            Serial.print("\n");
+            Serial.print("\tLight state : ");
+            Serial.println( master_payload.traffic_light_state);
+            Serial.print("\tCommand : ");
+            Serial.println( master_payload.command);
+
+
+            Serial.println( "SENDING SLAVE PAYLOAD : ");
+            Serial.print("\tConn status : ");
+            Serial.println( slave_payload.connection_status);
+            Serial.print("\tPosition : ");
+            Serial.println( slave_payload.position);
+            Serial.print("\tCommand response : ");
+            Serial.println( slave_payload.command_response);
+
+            if (slave_payload.position % 2 == 0){
+            slave_payload.position ++ ;
+            slave_payload.command_response ++ ;
+          }
+          else{
+            slave_payload.position -- ;
+            slave_payload.command_response -- ;
+          }
+          }
 
           // update the node count after sending ack payload - provides continually changing data
-          radio.writeAckPayload(1, &slave_payload, sizeof(slave_payload));
-          //long stop = millis();
-          //Serial.print("\tResponse time : ");
-          //Serial.println(stop-start, 0);
+          radio.writeAckPayload(SLAVE_ID, &slave_payload, sizeof(slave_payload));
+
+          if(DEBUG_MODE){
+            long stop = millis();
+            Serial.print("\tResponse time : ");
+            Serial.println(stop-start, 0);
+          }
+          
     }
 }

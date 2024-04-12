@@ -37,6 +37,7 @@ void loop(){
 
   algo_light(&timer_instance, 0);
   send_and_receive_comm_nrf();
+  delay(1000);
   
 
   //algo_light()
