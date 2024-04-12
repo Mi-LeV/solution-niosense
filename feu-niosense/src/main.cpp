@@ -21,9 +21,8 @@ extern int vitesse1_desire, vitesse2_desire, distance_desire;
 bool status1 = true, status2 = true;
 int nb_deconnexions_1, nb_deconnexions_2;
 
-/*** POUR TEST ***/
-#define DELAI 1000
-unsigned long int previousTime = 0, currentTime = 0;
+// Structure pour la communication avec les camions
+extern MasterPayloadStruct master_payload;
 
 void setup(){
   Serial.begin(115200);
@@ -51,8 +50,20 @@ void loop(){
   //create_master_payload() ( status led, command)
 
   algo_light(&timer_instance, 0);
+  master_payload.command = etat_btn; // mettre à jour la commande à envoyer aux camions
   send_and_receive_comm_nrf();
   handle_client();
+
+  // test en cours
+  if(etat_btn == START){
+
+  // test mis sur pause
+  }else if(etat_btn == PAUSE){
+
+  // test arrêté
+  }else{
+
+  }
 
   //algo_light()
   //serve_webpage()

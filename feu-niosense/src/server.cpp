@@ -1,4 +1,5 @@
 #include "server.h"
+#include "comm_nrf24.h"
 
 // Set web server port number to 80
 WebServer server(PORT);
@@ -14,6 +15,7 @@ int vitesse1_desire = 0, vitesse2_desire = 0, distance_desire = 10;
 // Déclarés dans le module NRF...
 extern bool status1, status2;
 extern int nb_deconnexions_1, nb_deconnexions_2;
+extern SlavePayloadStruct slave_payload[NB_SLAVES];
 
 struct run_time_t{
     int hours = 0;
@@ -199,8 +201,12 @@ void handle_data(void){
     JsonDocument doc;
     char response[100];
 
-    doc["status1"] = status1;
+    /*doc["status1"] = status1;
     doc["status2"] = status2;
+    doc["nb_decon_1"] = nb_deconnexions_1;
+    doc["nb_decon_2"] = nb_deconnexions_2;*/
+    doc["status1"] = slave_payload[0].connection_status;
+    doc["status2"] = slave_payload[1].connection_status;
     doc["nb_decon_1"] = nb_deconnexions_1;
     doc["nb_decon_2"] = nb_deconnexions_2;
     serializeJson(doc, response);
@@ -244,7 +250,7 @@ void update_timer(void){
 String new_line(event_t event){
     String str;
     char temps[10];
-    sprintf(temps, "%02d:%02d:%02d    ", run_time.hours, run_time.minutes, run_time.seconds);
+    sprintf(temps, "%02d:%02d:%02d\t", run_time.hours, run_time.minutes, run_time.seconds);
     str = temps;
     switch(event){
         case START:
