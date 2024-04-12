@@ -44,8 +44,8 @@ bool init_comm_nrf24() {
   for (int n = 0 ; n < NB_SLAVES ; n++){
     master_payload.connection_status[n] = false;
   }
-  master_payload.traffic_light_state = 0;
-  master_payload.command = 0;
+  master_payload.traffic_light_state = green;
+  master_payload.command = idle;
 
   // radio.printDetails();       // (smaller) function that prints raw register values
   // radio.printPrettyDetails(); // (larger) function that prints human readable data

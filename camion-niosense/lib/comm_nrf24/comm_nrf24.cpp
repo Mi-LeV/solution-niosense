@@ -44,17 +44,17 @@ void init_comm_nrf24() {
     slave_payload.connection_status = false;
     if (SLAVE_ID){
       slave_payload.position = 2 ;
-      slave_payload.command_response = 2 ;
+      slave_payload.command_response =(slave_command_response) 2 ;
     }
     else{
       slave_payload.position = 0 ;
-      slave_payload.command_response = 0 ;
+      slave_payload.command_response = (slave_command_response) 0 ;
     }
   }
   else{
     slave_payload.connection_status = false;
     slave_payload.position = 0 ;
-    slave_payload.command_response = 0 ;
+    slave_payload.command_response = (slave_command_response) 0 ;
   }
   
   
@@ -107,11 +107,9 @@ void radioCheckAndReply(void)
 
             if (slave_payload.position % 2 == 0){
             slave_payload.position ++ ;
-            slave_payload.command_response ++ ;
           }
           else{
             slave_payload.position -- ;
-            slave_payload.command_response -- ;
           }
           }
 
