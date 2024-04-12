@@ -9,11 +9,16 @@ void setup(){
 
 void loop(){
 
-  //get_etape_test() ( go, stop)
-  //position_camions = slave_payloads
-  //if (calcul_interferences()) : master_payload.ping = True
+  // lire position camion des slave payload
+  //if(go == true){
+    //if (calcul_interferences()) : master_payload.ping = True
+    //if (init == true) : master_command = initialize
+  //  master_command = go
+  //}else{
+    //master_command = stop
+  //}
   //create_master_payload() ( status led, command)
-
+  
 
 
   send_and_receive_comm_nrf();
