@@ -45,9 +45,6 @@ void setup(){
 }
 
 void loop(){
-  
-  //if (calcul_interferences()) : master_payload.ping = True
-  //create_master_payload() ( status led, command)
 
   // test en cours
   if(etat_btn == START){
