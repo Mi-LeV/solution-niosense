@@ -45,18 +45,15 @@ void setup(){
 }
 
 void loop(){
-  
-  //if (calcul_interferences()) : master_payload.ping = True
-  //create_master_payload() ( status led, command)
 
   // test en cours
   if(etat_btn == START){
     // initialisation du test
     if ( test_initialise ){
-      master_payload.command = init;
+      master_payload.command = master_init;
     // deroulement normal
     }else{
-      master_payload.command = go;
+      master_payload.command = master_go;
       
       for (uint8_t i = 0 ; i < NB_SLAVES ; i++){
         //master_payload.connection_status[i] = compute_comm(camion[i],rf_simul_reach,rf_simul_prob_interf)
@@ -65,10 +62,10 @@ void loop(){
     }
   // test mis sur pause
   }else if(etat_btn == PAUSE){
-    master_payload.command = stop;
+    master_payload.command = master_stop;
   // test arrêté
   }else{
-    master_payload.command = stop;
+    master_payload.command = master_stop;
   }
   // update transmitted traffic_light state
   master_payload.traffic_light_state = (traffic_light_color) sit_lum ; 

@@ -22,17 +22,17 @@ typedef enum
 
 typedef enum 
 {
-    idle,
-    init,
-    go,
-    stop
+    master_idle,
+    master_init,
+    master_go,
+    master_stop
     
 }master_command;
 
 typedef enum 
 {
-    NA,
-    init_finished
+    slave_NA,
+    slave_init_finished
     
 }slave_command_response;
 

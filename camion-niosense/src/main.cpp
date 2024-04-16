@@ -29,16 +29,16 @@ void loop(){
   slave_payload.connection_status = master_payload.connection_status[SLAVE_ID];
 
 
-  if ( master_payload.command == init){
+  if ( master_payload.command == master_init){
     //go to initial position
     //if (at_initial_position){slave_payload.command_response = init_finished}
     
-    if ( master_payload.command == go){
+    if ( master_payload.command == master_go){
       //go at desired speed
-      slave_payload.command_response = na;
+      slave_payload.command_response = slave_na;
   }else{// command stop
     //stop motor
-    slave_payload.command_response = na;
+    slave_payload.command_response = slave_na;
   }
   }
   slave_payload.position = position; // update current position
