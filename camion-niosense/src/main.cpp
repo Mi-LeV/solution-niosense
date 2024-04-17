@@ -119,7 +119,7 @@ void loop()
     }
   }
 
-  else if(flag_go)
+  else if(flag_go && master_payload.command==master_go)
   {
     if(((!digitalRead(LIMIT_SWITCH_0))||(!digitalRead(LIMIT_SWITCH_1)))&& !flag_pressed)
     {

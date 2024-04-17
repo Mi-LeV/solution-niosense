@@ -12,9 +12,19 @@
 #define DEBUG_MODE false
 #define RF_CHANNEL 0x76
 
+typedef enum 
+{
+    master_idle,
+    master_init,
+    master_go,
+    master_stop
+    
+}master_command;
+
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
   bool connection_status [NB_SLAVES]; // 0 : No conn, 1 : connection
+  uint8_t desired_speed;
   uint8_t traffic_light_state; // 0 : red, 1 : yellow, 2 : green
   uint8_t command; // 0 : idle, 1 : initialize, 2 : go, 3 : stop
 };

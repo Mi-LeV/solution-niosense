@@ -1,9 +1,19 @@
  #include "comm_nrf24.h"
  #include "light.h"
+ #include "server.h"
 
 hw_timer_t * timer = NULL;
 
 volatile uint8_t timer_instance = 0;
+
+bool status1, status2;
+int nb_deconnexions_1, nb_deconnexions_2;
+
+bool test_initialise = true;
+
+// Boutons et paramètres de l'interface (déclarés dans le module server)
+extern uint8_t etat_btn;
+extern int vitesse1_desire, vitesse2_desire, distance_desire;
 
 void IRAM_ATTR timer_isr() 
 {
@@ -25,6 +35,7 @@ void setup(){
 
   init_comm_nrf24();
   init_light();
+  init_server();
 }
 
 void loop(){
@@ -37,9 +48,28 @@ void loop(){
 
   algo_light(&timer_instance, 0);
   send_and_receive_comm_nrf();
-  delay(1000);
-  
 
+  // test en cours
+  if(etat_btn == START){
+    // initialisation du test
+    /*if ( test_initialise ){
+      master_payload.command = master_init;
+      master_payload.desired_speed = vitesse1_desire;
+    // deroulement normal
+    }else{*/
+      master_payload.command = master_go;
+      master_payload.desired_speed = vitesse1_desire;
+
+    //}
+  // test mis sur pause
+  }else if(etat_btn == PAUSE){
+    master_payload.command = master_stop;
+  // test arrêté
+  }else{
+    master_payload.command = master_stop;
+  }
+  
+  handle_client();
   //algo_light()
   //serve_webpage()
   //upload_data()
