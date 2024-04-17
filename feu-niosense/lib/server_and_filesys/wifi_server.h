@@ -1,14 +1,14 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
 #include <uTimerLib.h>
 #include "filesys.h"
 
-#define SSID "ELE400_AP"
+#define SSID_AP "ELE400_AP"
 #define PASSWORD "vert_le_futur" // le mot de passe doit être d'au moins 8 caractères
 #define PORT 80
 #define PAGE_WEB "/index.htm"

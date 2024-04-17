@@ -1,7 +1,7 @@
 #include "comm_nrf24.h"
 #include "light.h"
 #include "calcul_dist.h"
-#include "server.h"
+#include "wifi_server.h"
 
 hw_timer_t * timer = NULL;
 volatile uint8_t timer_instance = 0;
@@ -99,5 +99,4 @@ void loop(){
   algo_light(&timer_instance, 0);
   handle_client();
 
-  //upload_data()
 }

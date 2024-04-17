@@ -1,4 +1,4 @@
-#include "server.h"
+#include "wifi_server.h"
 #include "comm_nrf24.h"
 
 // Set web server port number to 80
@@ -29,7 +29,7 @@ struct run_time_t{
 void init_server(void){
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-    WiFi.softAP(SSID, PASSWORD);
+    WiFi.softAP(SSID_AP, PASSWORD);
     delay(100);
 
     if(!LittleFS.begin(1)){

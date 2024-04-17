@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include "server.h"
+#include "wifi_server.h"
 
 
 //////////////////////////////////////
