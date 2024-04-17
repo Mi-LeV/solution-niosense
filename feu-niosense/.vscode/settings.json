@@ -5,6 +5,7 @@
         "regex": "cpp",
         "iterator": "c",
         "cstdlib": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "cmath": "cpp"
     }
 }

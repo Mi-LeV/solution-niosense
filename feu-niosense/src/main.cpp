@@ -1,6 +1,7 @@
-#include "server.h"
 #include "comm_nrf24.h"
 #include "light.h"
+#include "calcul_dist.h"
+#include "server.h"
 
 hw_timer_t * timer = NULL;
 volatile uint8_t timer_instance = 0;
@@ -25,6 +26,9 @@ int nb_deconnexions_1, nb_deconnexions_2;
 
 // Structure pour la communication avec les camions
 extern MasterPayloadStruct master_payload;
+
+//variable de logique de la loop
+uint8_t current_node;
 
 void setup(){
   Serial.begin(115200);
@@ -55,8 +59,11 @@ void loop(){
     }else{
       master_payload.command = master_go;
       
-      for (uint8_t i = 0 ; i < NB_SLAVES ; i++){
-        //master_payload.connection_status[i] = compute_comm(camion[i],rf_simul_reach,rf_simul_prob_interf)
+      for ( current_node = 0 ; current_node < NB_SLAVES ; current_node++){
+        long camion[2];// A MODIFIER AVEC LA VRAIE VALEUR
+        /////ATTTTTTENTION
+        camionAtFeu(camion[current_node]);
+        master_payload.connection_status[current_node] = compute_comm(camion[current_node],distance_desire ,RF_SIMUL_PROB_INTERF); // distance_des est en cm, 
       }
 
     }

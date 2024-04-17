@@ -40,7 +40,7 @@ typedef enum
 // payloads to be sent and received by the nrf
 struct MasterPayloadStruct {
   bool connection_status [NB_SLAVES]; // 0 : No conn, 1 : connection
-  uint8_t desired_speed;
+  uint8_t desired_speed[NB_SLAVES];
   traffic_light_color traffic_light_state;
   master_command command;
 };

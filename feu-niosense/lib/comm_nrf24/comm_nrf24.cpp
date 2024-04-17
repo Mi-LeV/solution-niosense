@@ -45,7 +45,7 @@ bool init_comm_nrf24() {
     master_payload.connection_status[n] = false;
   }
   master_payload.traffic_light_state = green;
-  master_payload.command = idle;
+  master_payload.command = master_idle;
 
   // radio.printDetails();       // (smaller) function that prints raw register values
   // radio.printPrettyDetails(); // (larger) function that prints human readable data

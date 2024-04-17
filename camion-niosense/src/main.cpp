@@ -20,7 +20,7 @@ void setup(){
 void loop(){
 
   // get current desired speed
-  desired_speed = master_payload.desired_speed;
+  desired_speed = master_payload.desired_speed[SLAVE_ID];
   // get current traffic light state
   traffic_light_state = master_payload.traffic_light_state;
 

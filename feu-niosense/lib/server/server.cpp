@@ -17,6 +17,9 @@ extern bool status1, status2;
 extern int nb_deconnexions_1, nb_deconnexions_2;
 extern SlavePayloadStruct slave_payload[NB_SLAVES];
 
+//declare dans le main
+extern uint8_t current_node;
+
 struct run_time_t{
     int hours = 0;
     int minutes = 0;
@@ -273,6 +276,9 @@ String new_line(event_t event){
             break;
         case DIST_CHANGED:
             str += "Distance modifiée à : " + String(distance_desire) + "cm\n";
+            break;
+        case CAMION_BY_FEU:
+            str += "Le camion " + String(current_node) + "est passe par le feu\n";
             break;
     }
     return str;
