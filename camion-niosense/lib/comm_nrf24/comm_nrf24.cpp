@@ -19,7 +19,7 @@ long start,stop;
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    Serial.println("Radio hardware is not responding");
+    //Serial.println("Radio hardware is not responding");
     while (1); // wait indefinitely
   }
 
@@ -64,7 +64,7 @@ void init_comm_nrf24() {
   // initialize the master_payload to inoffensive values
   radio.writeAckPayload(SLAVE_ID, &slave_payload, sizeof(slave_payload));
   if (DEBUG_MODE){
-    radio.printPrettyDetails(); // (larger) function that prints human readable data
+    //radio.printPrettyDetails(); // (larger) function that prints human readable data
   }
    
 }
@@ -84,26 +84,26 @@ void radioCheckAndReply(void)
           
           if (DEBUG_MODE){
 
-            Serial.println( "RECEIVED MASTER PAYLOAD : ");
-            Serial.print("\tConn status : ");
+            //Serial.println( "RECEIVED MASTER PAYLOAD : ");
+            //Serial.print("\tConn status : ");
             for (int i = 0 ; i < NB_SLAVES ; i++){
-              Serial.print( master_payload.connection_status[0]);
-              Serial.print(" , ");
+              //Serial.print( master_payload.connection_status[0]);
+              //Serial.print(" , ");
             }
-            Serial.print("\n");
-            Serial.print("\tLight state : ");
-            Serial.println( master_payload.traffic_light_state);
-            Serial.print("\tCommand : ");
-            Serial.println( master_payload.command);
+            //Serial.print("\n");
+            //Serial.print("\tLight state : ");
+            //Serial.println( master_payload.traffic_light_state);
+            //Serial.print("\tCommand : ");
+            //Serial.println( master_payload.command);
 
 
-            Serial.println( "SENDING SLAVE PAYLOAD : ");
-            Serial.print("\tConn status : ");
-            Serial.println( slave_payload.connection_status);
-            Serial.print("\tPosition : ");
-            Serial.println( slave_payload.position);
-            Serial.print("\tCommand response : ");
-            Serial.println( slave_payload.command_response);
+            //Serial.println( "SENDING SLAVE PAYLOAD : ");
+            //Serial.print("\tConn status : ");
+            //Serial.println( slave_payload.connection_status);
+            //Serial.print("\tPosition : ");
+            //Serial.println( slave_payload.position);
+            //Serial.print("\tCommand response : ");
+           // Serial.println( slave_payload.command_response);
 
             if (slave_payload.position % 2 == 0){
             slave_payload.position ++ ;
@@ -120,8 +120,8 @@ void radioCheckAndReply(void)
 
           if(DEBUG_MODE){
             long stop = millis();
-            Serial.print("\tResponse time : ");
-            Serial.println(stop-start, 0);
+            //Serial.print("\tResponse time : ");
+           // Serial.println(stop-start, 0);
           }
           
     }

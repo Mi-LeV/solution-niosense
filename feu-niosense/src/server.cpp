@@ -10,7 +10,7 @@ IPAddress apIP(192, 168, 1, 1);
 String index_html = "";
 JsonDocument jsonDocument;
 uint8_t etat_btn = STOP;
-int vitesse1_desire = 0, vitesse2_desire = 0, distance_desire = 10;
+int vitesse1_desire = 50, vitesse2_desire = 50, distance_desire = 10;
 
 // Déclarés dans le module NRF...
 extern bool status1, status2;
