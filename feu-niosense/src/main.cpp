@@ -58,7 +58,8 @@ void loop(){
     // deroulement normal
     }else{*/
       master_payload.command = master_go;
-      master_payload.desired_speed = vitesse1_desire;
+      master_payload.desired_speed_1 = vitesse1_desire;
+      master_payload.desired_speed_2 = vitesse2_desire;
 
     //}
   // test mis sur pause

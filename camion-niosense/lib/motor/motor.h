@@ -11,7 +11,7 @@
 #define GPIO_MS1 GPIO_NUM_26
 #define GPIO_MS2 GPIO_NUM_27
 
-#define MAX_SPEED 4000
+#define MAX_SPEED 100
 #define ACCELERATION 2000
 
 #define DIR_ARRIERE 0

@@ -21,6 +21,7 @@ uint8_t flag_init = false;
 uint8_t flag_go = false;
 uint8_t flag_debut = false;
 uint8_t flag_fin = false;
+uint8_t speed = 50;
 long track_lenght = END_POINT;
 long distance_start = DIST_START;
 long distance_lost = DIST_LOST;
@@ -38,7 +39,7 @@ void setup(){
   pinMode(LIMIT_SWITCH_1, INPUT);
   pinMode(GPIO_BLUE_LED, OUTPUT);
 
-  stepper.setMaxSpeed(MAX_SPEED);
+  stepper.setMaxSpeed(MAX_SPEED*speed);
 	stepper.setAcceleration(ACCELERATION);
 
   init_comm_nrf24();
@@ -88,8 +89,8 @@ void loop()
         direction = !direction;
         distance_start = track_lenght/5;
         distance_lost = distance_start*4;
-        distance_pass_low = ((track_lenght/2)-((track_lenght/10)/2));
-        distance_pass_high = ((track_lenght/2)+((track_lenght/10)/2));
+        distance_pass_low = ((track_lenght/2)-((track_lenght/3)/2));
+        distance_pass_high = ((track_lenght/2)+((track_lenght/3)/2));
         flag_init = true;
         flag_go = true;
       }
@@ -230,7 +231,7 @@ void loop()
             }
           }
         }
-        stepper.setMaxSpeed(MAX_SPEED);
+        stepper.setMaxSpeed(MAX_SPEED * speed);
         stepper.run();
       }
       //else
@@ -243,10 +244,19 @@ void loop()
     radioCheckAndReply();
     // printf("\033[2J");
     cnt_printf++;
-
+    if(!SLAVE_ID)
+    {
+      speed = master_payload.desired_speed_1;
+    }
+    else
+    {
+      speed = master_payload.desired_speed_2;
+    }
     if(cnt_printf >= 3000)
     {
+      
       cnt_printf = 0;
+      /*
       printf("status : %d     \r\n", master_payload.connection_status);
       printf("light  : %d     \r\n", master_payload.traffic_light_state);
       printf("command: %d     \r\n\r\n", master_payload.command);
@@ -254,6 +264,10 @@ void loop()
       printf("pos: %d\r\n",stepper.currentPosition());
       printf("track_lenght: %d\r\n",track_lenght);
       printf("mode: %d\r\n",flag_init);
+*/
+      printf("pos: %d\r\n",stepper.currentPosition());
+      printf("low: %d\r\n",distance_pass_low);
+      printf("high: %d\r\n",distance_pass_high);
       //fflush(stdout);
     }
 }
