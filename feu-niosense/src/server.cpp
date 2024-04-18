@@ -201,14 +201,15 @@ void handle_data(void){
     JsonDocument doc;
     char response[100];
 
-    /*doc["status1"] = status1;
+    doc["status1"] = status1;
     doc["status2"] = status2;
     doc["nb_decon_1"] = nb_deconnexions_1;
-    doc["nb_decon_2"] = nb_deconnexions_2;*/
+    doc["nb_decon_2"] = nb_deconnexions_2;
+    /*
     doc["status1"] = slave_payload[0].connection_status;
     doc["status2"] = slave_payload[1].connection_status;
     doc["nb_decon_1"] = nb_deconnexions_1;
-    doc["nb_decon_2"] = nb_deconnexions_2;
+    doc["nb_decon_2"] = nb_deconnexions_2;*/
     serializeJson(doc, response);
     server.send(200, "application/json", response);
 }

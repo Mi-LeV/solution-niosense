@@ -85,6 +85,11 @@ bool send_and_receive_comm_nrf(){
         bool response = radio.write(&master_payload, sizeof(master_payload));  // transmit & save the report
         if ((response)||(radio.isAckPayloadAvailable() )) {
           radio.read(&slave_payload[node], sizeof(slave_payload[node]));
+			
+          if(node)
+		  	status2 = true;
+		  else 
+		  	status1 = true;
 
           if (DEBUG_MODE){
             Serial.print( "RECEIVED SLAVE PAYLOAD FROM Camion");
@@ -102,7 +107,11 @@ bool send_and_receive_comm_nrf(){
           Serial.print("TRANSMISSION FAILED Camion");  // payload was not delivered
           Serial.println(node+1);
           //
-          //
+          if(node)
+		  	status2 = false;
+		  else 
+		  	status1 = false;
+
           send_state = false;
         }
         radio.flush_tx();

@@ -38,6 +38,8 @@ struct SlavePayloadStruct {
 
 extern MasterPayloadStruct master_payload;
 extern SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
+extern bool status1;
+extern bool status2;
 
 bool init_comm_nrf24();
 

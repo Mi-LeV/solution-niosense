@@ -6,7 +6,8 @@ hw_timer_t * timer = NULL;
 
 volatile uint8_t timer_instance = 0;
 
-bool status1, status2;
+bool status1 = false;
+bool status2 = false;
 int nb_deconnexions_1, nb_deconnexions_2;
 
 bool test_initialise = true;
