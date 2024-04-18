@@ -115,6 +115,13 @@
                 width: 60px;
                 background-color: rgb(90, 90, 90); 
             }
+
+            #algo { 
+                font-size: 25px;
+                width: 120px;
+                height: 80px;
+                background-color: rgb(0, 255, 255);
+            }
         </style>
     </head>
     <body>
@@ -177,8 +184,9 @@
         </br>
 
         <div class="distance">
-            <label for="dist">Distance (cm)</label>
-            <input style="width: 40px; font-size: 20px" type="number" id="dist" name="distance" value="10" min="0" max="30">
+            <div class="container" style="background-color: inherit">
+                <button class="btn" id="algo">Algo lumière</button>
+            </div>
         </div>
 
         <h2 align="center">Log File</h2>
@@ -195,11 +203,11 @@
             let stopBtn = document.getElementById('stop'); 
             let downloadBtn = document.getElementById('download');
             let clearBtn = document.getElementById('clear');
+            let algoBtn = document.getElementById('algo');
 
             let sliderVit1 = document.getElementById('vit1');
             let sliderVit2 = document.getElementById('vit2');
-            let inputDist = document.getElementById('dist');
-            
+
             let hour = 0; 
             let minute = 0; 
             let second = 0; 
@@ -240,12 +248,10 @@
                 }
             }
 
-            inputDist.onchange = function(){
-                if(!timeout){
-                    timeout = true;
-                    setTimeout(sendDistance, 1000);
-                }
-            }
+            algoBtn.addEventListener('click', function () {
+                fetch("/algo", {method: "POST"})
+                .then(response => response.json());
+            });
 
             function sendVit1(){
                 fetch("/vit1", {
@@ -276,24 +282,6 @@
                     }
                 })
                 .then(response => response.json())
-                .then(data => {
-                    document.getElementById('log_file').innerHTML += data.new_line + "<br>";
-                    document.getElementById('log_file').scrollBy(0,50);
-                });
-                timeout = false;
-            }
-
-            function sendDistance() {
-                fetch("/dist", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        dist: document.getElementById('dist').value
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
-                    }
-                })
-                .then((response) => response.json())
                 .then(data => {
                     document.getElementById('log_file').innerHTML += data.new_line + "<br>";
                     document.getElementById('log_file').scrollBy(0,50);

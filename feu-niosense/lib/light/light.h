@@ -31,6 +31,12 @@
 
 #define MAX_SIZE_STACK 256
 
+#define ALGO_FIXE 0
+#define ALGO_DEMANDE 1
+// ATTENTION : À CHANGER DANS COMM_NRF24.H
+#define DISCONNECT_HIGH 26000
+#define DISCONNECT_LOW 4000
+
 typedef enum 
 {
     green_n,

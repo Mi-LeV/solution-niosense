@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include "RF24.h"
 #include <nRF24l01.h>
+//#include "light.h"
 
 #define CE_PIN 15
 #define CSN_PIN 5
@@ -11,6 +12,10 @@
 #define NB_SLAVES 2
 #define DEBUG_MODE false
 #define RF_CHANNEL 0x76
+
+// ATTENTION : À CHANGER DANS LIGHT.H
+#define DISCONNECT_HIGH 26000
+#define DISCONNECT_LOW 4000
 
 typedef enum 
 {

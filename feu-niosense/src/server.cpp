@@ -17,6 +17,8 @@ extern bool status1, status2;
 extern int nb_deconnexions_1, nb_deconnexions_2;
 extern SlavePayloadStruct slave_payload[NB_SLAVES];
 
+extern uint8_t algo;
+
 struct run_time_t{
     int hours = 0;
     int minutes = 0;
@@ -43,6 +45,7 @@ void init_server(void){
     server.on ("/vit2", HTTP_POST, handle_vitesse2);
     server.on ("/dist", HTTP_POST, handle_distance);
     server.on ("/clear", HTTP_POST, handle_clear);
+    server.on ("/algo", HTTP_POST, handle_algo);
     server.on ("/time", HTTP_GET, handle_time);
     server.on ("/data", HTTP_GET, handle_data);
     server.on ("/download", HTTP_GET, handle_download);
@@ -212,6 +215,10 @@ void handle_data(void){
     doc["nb_decon_2"] = nb_deconnexions_2;*/
     serializeJson(doc, response);
     server.send(200, "application/json", response);
+}
+
+void handle_algo(void){
+    algo = !algo;
 }
 
 void handle_404(void) {

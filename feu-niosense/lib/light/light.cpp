@@ -6,6 +6,8 @@ situation sit_lum = green_n;
 uint8_t flag_reset = false;
 uint8_t last_light = GREEN;
 
+extern uint8_t algo;
+
 static void erase_first(uint8_t* tab, uint8_t* tab_size)
 {
     for(uint8_t i = 0; i < *tab_size; i++)
@@ -56,7 +58,16 @@ void set_light(uint8_t light)
     }
 }
 
-uint8_t event(void);
+uint8_t event(void)
+{
+    uint8_t event_return = 0;
+    if((algo == ALGO_DEMANDE) && (((slave_payload[0].position < DISCONNECT_HIGH) && (slave_payload[0].position > DISCONNECT_LOW)) ||
+        ((slave_payload[1].position < DISCONNECT_HIGH) && (slave_payload[1].position > DISCONNECT_LOW))))
+    {
+        event_return = 1;
+    }
+    return event_return;
+}
 
 void algo_light(volatile uint8_t* timer, uint8_t event)
 {

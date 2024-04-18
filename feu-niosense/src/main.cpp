@@ -16,6 +16,8 @@ bool test_initialise = true;
 extern uint8_t etat_btn;
 extern int vitesse1_desire, vitesse2_desire, distance_desire;
 
+uint8_t algo = ALGO_FIXE;
+
 void IRAM_ATTR timer_isr() 
 {
     timer_instance++;
@@ -47,7 +49,7 @@ void loop(){
   //create_master_payload() ( status led, command)
 
 
-  algo_light(&timer_instance, 0);
+  algo_light(&timer_instance, event());
   send_and_receive_comm_nrf();
 
   // test en cours

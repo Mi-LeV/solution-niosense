@@ -86,7 +86,7 @@ bool send_and_receive_comm_nrf(){
         if ((response)||(radio.isAckPayloadAvailable() )) {
           radio.read(&slave_payload[node], sizeof(slave_payload[node]));
 			
-          if(node && (slave_payload[1].position > 29000 || slave_payload[1].position < 1000))
+          if(node && (slave_payload[1].position > DISCONNECT_HIGH || slave_payload[1].position < DISCONNECT_LOW))
 		  {
 		  	status2 = false;
 		  }
@@ -95,7 +95,7 @@ bool send_and_receive_comm_nrf(){
 		  	status2 = true;
 		  }
 			
-          if(node && (slave_payload[0].position > 29000 || slave_payload[0].position < 1000))
+          if(node && (slave_payload[0].position > DISCONNECT_HIGH || slave_payload[0].position < DISCONNECT_LOW))
 		  {
 		  	status1 = false;
 		  }
