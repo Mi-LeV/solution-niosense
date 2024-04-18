@@ -5,6 +5,7 @@ uint8_t tab_size = 0;
 situation sit_lum = green_n;
 uint8_t flag_reset = false;
 uint8_t last_light = GREEN;
+uint8_t flag_demande = false;
 
 extern uint8_t algo;
 
@@ -62,8 +63,9 @@ uint8_t event(void)
 {
     uint8_t event_return = 0;
     if((algo == ALGO_DEMANDE) && (((slave_payload[0].position < DISCONNECT_HIGH) && (slave_payload[0].position > DISCONNECT_LOW)) ||
-        ((slave_payload[1].position < DISCONNECT_HIGH) && (slave_payload[1].position > DISCONNECT_LOW))))
+        ((slave_payload[1].position < DISCONNECT_HIGH) && (slave_payload[1].position > DISCONNECT_LOW))) && !flag_demande)
     {
+        flag_demande = true;
         event_return = 1;
     }
     return event_return;
@@ -128,6 +130,8 @@ void algo_light(volatile uint8_t* timer, uint8_t event)
             }
             set_light(RED);
             last_light = RED;
+            if(*timer >= TIME_RED/4)
+                flag_demande = false;
             if(*timer >= TIME_RED)
             {
                 flag_reset = 0;
