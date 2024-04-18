@@ -15,7 +15,7 @@
 #define FICHIER_LOG "/banc_essai.log"
 
 // d'autres événements peuvent être ajoutés
-typedef enum { START = 0, PAUSE, STOP, VIT1_CHANGED, VIT2_CHANGED, DIST_CHANGED, CAMION_BY_FEU } event_t;
+typedef enum { START = 0, PAUSE, STOP, VIT1_CHANGED, VIT2_CHANGED, DIST_CHANGED, CAMION_BY_FEU, CONN_STATUS_CHANGED } event_t;
 
 void init_server(void);
 void handle_webpage(void);

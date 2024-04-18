@@ -280,6 +280,14 @@ String new_line(event_t event){
         case CAMION_BY_FEU:
             str += "Le camion " + String(current_node) + "est passe par le feu\n";
             break;
+        case CONN_STATUS_CHANGED:
+            if (slave_payload[current_node].connection_status){
+                str += "Le camion " + String(current_node) + "s'est connecte au feu\n";
+            }else{
+                str += "Le camion " + String(current_node) + "s'est deconnecte du feu\n";
+            }
+            
+            break;
     }
     return str;
 }

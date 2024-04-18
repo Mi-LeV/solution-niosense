@@ -29,6 +29,7 @@ extern MasterPayloadStruct master_payload;
 
 //variable de logique de la loop
 uint8_t current_node;
+bool previous_slave_conn_status [NB_SLAVES] = {false, false};
 
 void setup(){
   Serial.begin(115200);
@@ -81,6 +82,13 @@ void loop(){
 
   //see reponse from slaves
 
+  //test if there is change in connection status for camions 
+  for (current_node = 0 ; current_node < NB_SLAVES ; current_node++){
+      if(slave_payload[current_node].connection_status != previous_slave_conn_status[NB_SLAVES]){
+        new_line(CONN_STATUS_CHANGED);
+        previous_slave_conn_status[NB_SLAVES] = slave_payload[current_node].connection_status ;
+      }
+    }
   //position_camions = slave_payloads
 
   // test for end of initialisation from slaves
