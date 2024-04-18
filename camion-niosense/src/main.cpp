@@ -260,6 +260,7 @@ void loop()
     //}
     digitalWrite(GPIO_BLUE_LED, flag_pressed);
   }
+    slave_payload.position=stepper.currentPosition();
     radioCheckAndReply();
     cnt_printf++;
     if(!SLAVE_ID)

@@ -86,10 +86,23 @@ bool send_and_receive_comm_nrf(){
         if ((response)||(radio.isAckPayloadAvailable() )) {
           radio.read(&slave_payload[node], sizeof(slave_payload[node]));
 			
-          if(node)
+          if(node && (slave_payload[1].position > 29000 || slave_payload[1].position < 1000))
+		  {
+		  	status2 = false;
+		  }
+		  else if(node)
+		  {
 		  	status2 = true;
-		  else 
+		  }
+			
+          if(node && (slave_payload[0].position > 29000 || slave_payload[0].position < 1000))
+		  {
+		  	status1 = false;
+		  }
+		  else if(node)
+		  {
 		  	status1 = true;
+		  } 
 
           if (DEBUG_MODE){
             Serial.print( "RECEIVED SLAVE PAYLOAD FROM Camion");
