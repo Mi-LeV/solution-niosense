@@ -1,6 +1,6 @@
- #include "comm_nrf24.h"
+#include "comm_nrf24.h"
  #include "light.h"
- #include "server.h"
+
 
 hw_timer_t * timer = NULL;
 

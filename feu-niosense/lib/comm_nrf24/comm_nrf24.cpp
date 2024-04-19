@@ -12,6 +12,8 @@ RF24 radio(CE_PIN, CSN_PIN);
 MasterPayloadStruct master_payload;
 SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
 
+
+
 long start,stop;
 
 // Init comm NRF24
@@ -88,19 +90,39 @@ bool send_and_receive_comm_nrf(){
 			
           if(node && (slave_payload[1].position > DISCONNECT_HIGH || slave_payload[1].position < DISCONNECT_LOW))
 		  {
+        if (status2){
+          status2 = false;
+          String line = new_line(CONN_STATUS_CHANGED_2);
+          appendFile(FICHIER_LOG, line.c_str());
+        }
 		  	status2 = false;
 		  }
 		  else if(node)
 		  {
+        if (status2 == 0){
+          status2 = true;
+          String line = new_line(CONN_STATUS_CHANGED_2);
+          appendFile(FICHIER_LOG, line.c_str());
+        }
 		  	status2 = true;
 		  }
 			
           if(!node && (slave_payload[0].position > DISCONNECT_HIGH || slave_payload[0].position < DISCONNECT_LOW))
 		  {
+        if (status1){
+          status1 = false;
+          String line = new_line(CONN_STATUS_CHANGED_1);
+          appendFile(FICHIER_LOG, line.c_str());
+        }
 		  	status1 = false;
 		  }
 		  else if(!node)
 		  {
+        if (status1 == 0){
+          status1 = true;
+          String line = new_line(CONN_STATUS_CHANGED_1);
+          appendFile(FICHIER_LOG, line.c_str());
+        }
 		  	status1 = true;
 		  } 
 

@@ -1,5 +1,4 @@
-#include "server.h"
-#include "comm_nrf24.h"
+#include "wifi_server.h"
 
 // Set web server port number to 80
 WebServer server(PORT);
@@ -28,7 +27,7 @@ struct run_time_t{
 void init_server(void){
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-    WiFi.softAP(SSID, PASSWORD);
+    WiFi.softAP(SSID_AP, PASSWORD);
     delay(100);
 
     if(!LittleFS.begin(1)){
@@ -281,6 +280,20 @@ String new_line(event_t event){
             break;
         case DIST_CHANGED:
             str += "Distance modifiée à : " + String(distance_desire) + "cm\n";
+            break;
+        case CONN_STATUS_CHANGED_1:
+            if (status1){
+                str += "Le camion 1 s'est connecte au feu\n";
+            }else{
+                str += "Le camion 1 s'est deconnecte du feu\n";
+            }
+            break;
+        case CONN_STATUS_CHANGED_2:
+            if (status2){
+                str += "Le camion 2 s'est connecte au feu\n";
+            }else{
+                str += "Le camion 2 s'est deconnecte du feu\n";
+            }
             break;
     }
     return str;
