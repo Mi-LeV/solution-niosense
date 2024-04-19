@@ -36,7 +36,7 @@
 			    border: none;
             }
 
-            div.distance{
+            div.algo{
                 width: 200px;
                 padding: 10px;
                 text-align: center;
@@ -117,10 +117,10 @@
             }
 
             #algo { 
-                font-size: 25px;
-                width: 120px;
-                height: 80px;
-                background-color: rgb(0, 255, 255);
+                font-size: 20px;
+                width: 160px;
+                height: 55px;
+                background-color: rgb(140,140,140);
             }
         </style>
     </head>
@@ -183,9 +183,10 @@
         </table>
         </br>
 
-        <div class="distance">
+        <div class="algo">
+            Algorithme du feu:
             <div class="container" style="background-color: inherit">
-                <button class="btn" id="algo">Algo lumière</button>
+                <button class="btn" id="algo">Séquence fixe</button>
             </div>
         </div>
 
@@ -251,6 +252,14 @@
             algoBtn.addEventListener('click', function () {
                 fetch("/algo", {method: "POST"})
                 .then(response => response.json());
+
+                if(document.getElementById("algo").innerHTML == "Demandes de passage"){
+                    document.getElementById("algo").innerHTML = "Séquence fixe";
+                    document.getElementById("algo").style.backgroundColor = 'rgb(140,140,140)';
+                }else{
+                    document.getElementById("algo").innerHTML = "Demandes de passage";
+                    document.getElementById("algo").style.backgroundColor = 'rgb(64,64,64)';
+                }
             });
 
             function sendVit1(){

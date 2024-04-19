@@ -17,33 +17,33 @@ String ouvrir_fichier(String nom_fichier){
 }
 
 void appendFile(const char * name_file, const char * message){
-    Serial.printf("Appending to file: %s\r\n", name_file);
+    //Serial.printf("Appending to file: %s\r\n", name_file);
 
     File file = LittleFS.open(name_file, FILE_APPEND);
     if(!file){
-        Serial.println("- failed to open file for appending");
+        //Serial.println("- failed to open file for appending");
         return;
     }
     if(file.print(message)){
-        Serial.println("- message appended");
+        //Serial.println("- message appended");
     } else {
-        Serial.println("- append failed");
+        //Serial.println("- append failed");
     }
     file.close();
 }
 
 void writeFile(const char * name_file, const char * message){
-    Serial.printf("Writing file: %s\r\n", name_file);
+    //Serial.printf("Writing file: %s\r\n", name_file);
 
     File file = LittleFS.open(name_file, FILE_WRITE);
     if(!file){
-        Serial.println("- failed to open file for writing");
+        //Serial.println("- failed to open file for writing");
         return;
     }
     if(file.print(message)){
-        Serial.println("- file written");
+        //Serial.println("- file written");
     } else {
-        Serial.println("- write failed");
+        //Serial.println("- write failed");
     }
     file.close();
 }

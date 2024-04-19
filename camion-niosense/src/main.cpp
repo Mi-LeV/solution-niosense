@@ -103,6 +103,7 @@ void loop()
         flag_debut = true;
       //  printf("%d\r\n",1);
       }
+      digitalWrite(GPIO_BLUE_LED, flag_pressed);
     }
     else if(digitalRead(LIMIT_SWITCH_0) && digitalRead(LIMIT_SWITCH_1) && flag_pressed)//si la limit switch n'est plus presse
     {
@@ -258,7 +259,6 @@ void loop()
       // stepper.setMaxSpeed(0);
       //}
     //}
-    digitalWrite(GPIO_BLUE_LED, flag_pressed);
   }
     slave_payload.position=stepper.currentPosition();
     radioCheckAndReply();

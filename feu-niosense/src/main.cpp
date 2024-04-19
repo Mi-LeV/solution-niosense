@@ -26,7 +26,7 @@ void IRAM_ATTR timer_isr()
 
 void setup(){
   Serial.begin(115200);
-  Serial.println("BOARD : MASTER");
+  //Serial.println("BOARD : MASTER");
   uint8_t timer_id = 0;
   uint16_t prescaler = 80; // Between 0 and 65 535
   int threshold = 1000000; // 64 bits value (limited to int size of 32bits)

@@ -2,12 +2,12 @@
 
 // Log debug informations about transmisson 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    Serial.print( "\r\nLast Packet Send Status:\t");
+    //Serial.print( "\r\nLast Packet Send Status:\t");
     if(status == ESP_NOW_SEND_SUCCESS){
-        Serial.println("Data Delivery Fail");
+       // Serial.println("Data Delivery Fail");
     }
     else{
-      Serial.println("Data Delivery Success");
+     // Serial.println("Data Delivery Success");
     }
 }
 
@@ -26,49 +26,49 @@ void OnDataReceived(const uint8_t * mac, const uint8_t *incomingData, int len) {
     }
   }
   if (slave_id == 2){
-    Serial.print( "MAC adress of received message is not in the list : ");
+    //Serial.print( "MAC adress of received message is not in the list : ");
     for(int n = 0 ; n < 6; n++){
-    Serial.print(mac[n],HEX);
-    Serial.print(" : ");
+    //Serial.print(mac[n],HEX);
+    //Serial.print(" : ");
     }
-    Serial.print("\n");
+    //Serial.print("\n");
   }
 
   memcpy(&slave_payload[slave_id], incomingData, sizeof(slave_payload));
   
-  Serial.println(" Recieved ");
-  Serial.println( len);
-  Serial.print(" from ");
+  //Serial.println(" Recieved ");
+  //Serial.println( len);
+  //Serial.print(" from ");
   for(int n = 0 ; n < 6; n++){
-    Serial.print(mac[n],HEX);
-    Serial.print(" : ");
+    //Serial.print(mac[n],HEX);
+    //Serial.print(" : ");
   }
-  Serial.print("\n");
+  //Serial.print("\n");
 
-  Serial.println( slave_payload[slave_id].connection_status);
-  Serial.println( slave_payload[slave_id].command_response);
-  Serial.println( slave_payload[slave_id].position);
+  //Serial.println( slave_payload[slave_id].connection_status);
+  //Serial.println( slave_payload[slave_id].command_response);
+  //Serial.println( slave_payload[slave_id].position);
 
 }
 
 // Initialize ESP_NOW comm
 void init_comm_wifi() {
 
-  Serial.print("ESP Board MAC Address:  ");
-  Serial.println(WiFi.macAddress());
+  //Serial.print("ESP Board MAC Address:  ");
+  //Serial.println(WiFi.macAddress());
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, NULL);
-  Serial.print("Connecting to WiFi ..");
+  //Serial.print("Connecting to WiFi ..");
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
+    //Serial.print('.');
     delay(1000);
   }
-  Serial.println(WiFi.localIP());
+  //Serial.println(WiFi.localIP());
   
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    Serial.println( "Error initializing ESP-NOW");
+    //Serial.println( "Error initializing ESP-NOW");
     return;
   }
 
@@ -85,13 +85,13 @@ void init_comm_wifi() {
     
     // Add peer        
     if (esp_now_add_peer(&peerInfo) != ESP_OK){
-      Serial.print("Failed to add slave ");
-      Serial.println(slave_nb);
+      //Serial.print("Failed to add slave ");
+      //Serial.println(slave_nb);
     }
     else{
-      Serial.print("Added slave ");
-      Serial.print(slave_nb);
-      Serial.println(" successfully ");
+      //Serial.print("Added slave ");
+      //Serial.print(slave_nb);
+      //Serial.println(" successfully ");
 
     }
   }
@@ -105,10 +105,10 @@ void send_comm_wifi(){
     esp_err_t result = esp_now_send(mac_adresses[slave_nb], (uint8_t *) &master_payload, sizeof(master_payload));
 
     if (result == ESP_OK) {
-      Serial.println("Master payload sent");
+      //Serial.println("Master payload sent");
     }
     else {
-      Serial.println("Error sending the data");
+      //Serial.println("Error sending the data");
     }
   }
 }

@@ -16,7 +16,7 @@ SlavePayloadStruct slave_payload[NB_SLAVES]; // 2 slave payloads
 void init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    Serial.println("Radio hardware is not responding");
+    //Serial.println("Radio hardware is not responding");
     while (1); // wait indefinitely
   }
 
@@ -89,7 +89,7 @@ void send_and_receive_comm_nrf(){
 
         } else {
           
-          Serial.println("TRANSMISSION FAILED");  // payload was not delivered
+          //Serial.println("TRANSMISSION FAILED");  // payload was not delivered
           radio.flush_rx();
           radio.flush_tx();
         }

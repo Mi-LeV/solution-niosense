@@ -21,9 +21,9 @@ int runUnityTests(void) {
   RUN_TEST(test_initilization);
 
   for(j = 50 ; j>0 ; j-=5){
-    Serial.print("Testing for ");
-    Serial.print(j);
-    Serial.print(" delay\n");
+    //Serial.print("Testing for ");
+    //Serial.print(j);
+    //Serial.print(" delay\n");
     RUN_TEST(test_comm);
   }
   
@@ -36,7 +36,7 @@ void setup(){
 
 
   Serial.begin(115200);
-  Serial.println("BOARD : MASTER");
+  //Serial.println("BOARD : MASTER");
 
   //init_comm_wifi();
   

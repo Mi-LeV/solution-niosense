@@ -73,7 +73,7 @@ void handle_start(void){
     server.send(200, "application/json", response);
 
     etat_btn = START;
-    Serial.printf("Etat : %d\n", etat_btn);
+    //Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
@@ -90,7 +90,7 @@ void handle_pause(void){
     server.send(200, "application/json", response);
 
     etat_btn = PAUSE;
-    Serial.printf("Etat : %d\n", etat_btn);
+    //Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
@@ -110,13 +110,13 @@ void handle_stop(void){
     run_time.seconds = 0;
 
     etat_btn = STOP;
-    Serial.printf("Etat : %d\n", etat_btn);
+    //Serial.printf("Etat : %d\n", etat_btn);
     appendFile(FICHIER_LOG, ligne.c_str());
 }
 
 void handle_clear(void){
     writeFile(FICHIER_LOG, "");
-    Serial.println("Fichier log supprimé!");
+    //Serial.println("Fichier log supprimé!");
     server.send(200, "application/json", "{}");
 }
 
@@ -143,8 +143,8 @@ void handle_vitesse1(void){
         deserializeJson(jsonDocument, body);
 
         vitesse1_desire = jsonDocument["vit1"];
-        Serial.print("Vitesse1 : ");
-        Serial.println(vitesse1_desire);
+        //Serial.print("Vitesse1 : ");
+        //Serial.println(vitesse1_desire);
 
         JsonDocument doc;
         String ligne = new_line(VIT1_CHANGED);
@@ -164,8 +164,8 @@ void handle_vitesse2(void){
         deserializeJson(jsonDocument, body);
 
         vitesse2_desire = jsonDocument["vit2"];
-        Serial.print("Vitesse2 : ");
-        Serial.println(vitesse2_desire);
+        //Serial.print("Vitesse2 : ");
+        //Serial.println(vitesse2_desire);
 
         JsonDocument doc;
         String ligne = new_line(VIT2_CHANGED);
@@ -185,8 +185,8 @@ void handle_distance(void){
         deserializeJson(jsonDocument, body);
 
         distance_desire = jsonDocument["dist"];
-        Serial.print("Distance : ");
-        Serial.println(distance_desire);
+        //Serial.print("Distance : ");
+        //Serial.println(distance_desire);
 
         JsonDocument doc;
         String ligne = new_line(DIST_CHANGED);
@@ -252,7 +252,7 @@ void update_timer(void){
         }
     }
     // pour test
-    Serial.printf("%02d:%02d:%02d\n", run_time.hours, run_time.minutes, run_time.seconds);
+    //Serial.printf("%02d:%02d:%02d\n", run_time.hours, run_time.minutes, run_time.seconds);
 }
 
 String new_line(event_t event){

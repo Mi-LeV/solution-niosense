@@ -18,7 +18,7 @@ long start,stop;
 bool init_comm_nrf24() {
   // initialize the transceiver on the SPI bus
   if (!radio.begin()) {
-    Serial.println("Radio hardware is not responding");
+    //Serial.println("Radio hardware is not responding");
     return false;
   }
 
@@ -95,11 +95,11 @@ bool send_and_receive_comm_nrf(){
 		  	status2 = true;
 		  }
 			
-          if(node && (slave_payload[0].position > DISCONNECT_HIGH || slave_payload[0].position < DISCONNECT_LOW))
+          if(!node && (slave_payload[0].position > DISCONNECT_HIGH || slave_payload[0].position < DISCONNECT_LOW))
 		  {
 		  	status1 = false;
 		  }
-		  else if(node)
+		  else if(!node)
 		  {
 		  	status1 = true;
 		  } 
@@ -117,8 +117,8 @@ bool send_and_receive_comm_nrf(){
 
         } else {
           
-          Serial.print("TRANSMISSION FAILED Camion");  // payload was not delivered
-          Serial.println(node+1);
+          //Serial.print("TRANSMISSION FAILED Camion");  // payload was not delivered
+          //Serial.println(node+1);
           //
           if(node)
 		  	status2 = false;
