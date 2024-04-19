@@ -64,7 +64,7 @@ void loop(){
         long camion[2];// A MODIFIER AVEC LA VRAIE VALEUR
         /////ATTTTTTENTION
         camionAtFeu(camion[current_node]);
-        master_payload.connection_status[current_node] = compute_comm(camion[current_node],distance_desire ,RF_SIMUL_PROB_INTERF); 
+        master_payload.connection_status[current_node] = compute_comm(camion[current_node]); 
         // distance_desiree est en cm
       }
 
